@@ -2,7 +2,8 @@
   "openapi": "3.1.1",
   "info": {
     "title": "SaisonManager | v2",
-    "version": "2.0.0"
+    "version": "2.0.0",
+    "description": "SaisonManager API v2 (20. März 2026)"
   },
   "servers": [
     {
@@ -10,18 +11,6 @@
     }
   ],
   "paths": {
-    "/": {
-      "get": {
-        "tags": [
-          "SaisonManager"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/v2/init.json": {
       "get": {
         "tags": [
