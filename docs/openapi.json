@@ -13,8 +13,7 @@
     "/api/v2/init.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "responses": {
           "200": {
@@ -36,8 +35,7 @@
     "/api/v2/leagues.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "responses": {
           "200": {
@@ -62,8 +60,7 @@
     "/api/v2/games.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "responses": {
           "200": {
@@ -88,8 +85,7 @@
     "/api/v2/game_operations/{gameOperationId}/leagues.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -126,8 +122,7 @@
     "/api/v2/leagues/{leagueId}.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -161,8 +156,7 @@
     "/api/v2/leagues/{leagueId}/schedule.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -199,8 +193,7 @@
     "/api/v2/leagues/{leagueId}/table.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -237,8 +230,7 @@
     "/api/v2/leagues/{leagueId}/grouped_table.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -275,8 +267,7 @@
     "/api/v2/leagues/{leagueId}/scorer.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -313,8 +304,7 @@
     "/api/v2/leagues/{leagueId}/game_days/{gameDayNumber}/schedule.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -364,8 +354,7 @@
     "/api/v2/leagues/{leagueId}/game_days/current/schedule.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -402,8 +391,7 @@
     "/api/v2/admin/leagues/{leagueId}/additional_references.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -437,8 +425,7 @@
     "/api/v2/games/{gameId}.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "parameters": [
           {
@@ -472,8 +459,7 @@
     "/api/v2/penalties.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "responses": {
           "200": {
@@ -498,8 +484,7 @@
     "/api/v2/penalty_codes.json": {
       "get": {
         "tags": [
-          "SaisonManager",
-          "SmApiMirror"
+          "SaisonManager"
         ],
         "responses": {
           "200": {
