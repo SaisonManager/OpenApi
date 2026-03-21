@@ -2,23 +2,33 @@
   "openapi": "3.1.1",
   "info": {
     "title": "SaisonManager | v2",
-    "version": "2.0.0",
-    "description": "SaisonManager API v2 (20. März 2026)"
+    "version": "2.0.0"
   },
   "servers": [
     {
-      "url": "https://SaisonManager.de/"
+      "url": "https://saisonmanager.net/api/v2/"
     }
   ],
   "paths": {
     "/api/v2/init.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmInitResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -26,11 +36,25 @@
     "/api/v2/leagues.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2LeaguePreview"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -38,11 +62,25 @@
     "/api/v2/games.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2GamePreview"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -50,7 +88,8 @@
     "/api/v2/game_operations/{gameOperationId}/leagues.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -66,7 +105,20 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2BaseLeague"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -74,7 +126,8 @@
     "/api/v2/leagues/{leagueId}.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -90,7 +143,17 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmLeagueResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -98,7 +161,8 @@
     "/api/v2/leagues/{leagueId}/schedule.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -114,7 +178,20 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2ScheduledGame"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -122,7 +199,8 @@
     "/api/v2/leagues/{leagueId}/table.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -138,7 +216,20 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2TableTeam"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -146,7 +237,8 @@
     "/api/v2/leagues/{leagueId}/grouped_table.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -162,7 +254,20 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/SmV2TableGroup"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -170,7 +275,8 @@
     "/api/v2/leagues/{leagueId}/scorer.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -186,55 +292,20 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v2/admin/leagues/{leagueId}/additional_references.json": {
-      "get": {
-        "tags": [
-          "SaisonManager"
-        ],
-        "parameters": [
-          {
-            "name": "leagueId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": "integer",
-              "format": "int32"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2ScorerPlayer"
+                  }
+                }
+              }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v2/leagues/{leagueId}/game_days/current/schedule.json": {
-      "get": {
-        "tags": [
-          "SaisonManager"
-        ],
-        "parameters": [
-          {
-            "name": "leagueId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -242,7 +313,8 @@
     "/api/v2/leagues/{leagueId}/game_days/{gameDayNumber}/schedule.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -256,7 +328,48 @@
             }
           },
           {
-            "name": "gameDayNumber",
+            "name": "gameDayId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2ScheduledGame"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v2/leagues/{leagueId}/game_days/current/schedule.json": {
+      "get": {
+        "tags": [
+          "SaisonManager",
+          "SmApiMirror"
+        ],
+        "parameters": [
+          {
+            "name": "leagueId",
             "in": "path",
             "required": true,
             "schema": {
@@ -268,7 +381,55 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2ScheduledGame"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v2/admin/leagues/{leagueId}/additional_references.json": {
+      "get": {
+        "tags": [
+          "SaisonManager",
+          "SmApiMirror"
+        ],
+        "parameters": [
+          {
+            "name": "leagueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmLeagueAdditionalReferencesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -276,7 +437,8 @@
     "/api/v2/games/{gameId}.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "parameters": [
           {
@@ -292,31 +454,2528 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmGameResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
-    "/api/v2/user/leagues/penalties.json": {
+    "/api/v2/penalties.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2Penalty"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
-    "/api/v2/user/leagues/penalty_codes.json": {
+    "/api/v2/penalty_codes.json": {
       "get": {
         "tags": [
-          "SaisonManager"
+          "SaisonManager",
+          "SmApiMirror"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmV2PenaltyCode"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PointCorrection": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reference_number": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "team_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmGameResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_day": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2GameDay"
+              }
+            ]
+          },
+          "game_number": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "start_time": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "actual_start_time": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ingame_status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "audience": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "home_team_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "guest_team_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "live_stream_link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "vod_link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "events": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2GameEvent"
+            }
+          },
+          "players": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2Players"
+              }
+            ]
+          },
+          "starting_players": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2StartingPlayers"
+              }
+            ]
+          },
+          "awards": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2Awards"
+              }
+            ]
+          },
+          "league_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "league_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operation_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_slug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "period_titles": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2PeriodTitle"
+            }
+          },
+          "nominated_referees": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "deletable": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "arena": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "arena_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arena_address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arena_short": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "date": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "started": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "ended": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "home_team_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "home_team_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "home_team_small_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_small_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "referees": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2Referee"
+            }
+          },
+          "notice_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notice_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "current_period_title": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2PeriodTitle"
+              }
+            ]
+          },
+          "result_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "result": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2Result"
+              }
+            ]
+          }
+        }
+      },
+      "SmInitResponse": {
+        "type": "object",
+        "properties": {
+          "seasons": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2Season"
+            }
+          },
+          "current_season_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operations": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2GameOperation"
+            }
+          }
+        }
+      },
+      "SmLeagueAdditionalReferencesResponse": {
+        "type": "object",
+        "properties": {
+          "arenas": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2Arena"
+            }
+          },
+          "teams": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2Team"
+            }
+          },
+          "clubs": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2Club"
+            }
+          }
+        }
+      },
+      "SmLeagueResponse": {
+        "type": "object",
+        "properties": {
+          "similar_leagues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SmV2BaseLeague"
+            }
+          },
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operation_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operation_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_slug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_category_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_class_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_system_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "female": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "enable_scorer": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "season_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_day_numbers": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          "game_day_titles": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2GameDay"
+            }
+          },
+          "deadline": { },
+          "before_deadline": { },
+          "legacy_league": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "field_size": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_modus": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "has_preround": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "table_modus": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "periods": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "period_length": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "overtime_length": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SmV2Arena": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "capacity": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "city": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "comment": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "created_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "created_by": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "disabled": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "housenumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "postcode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "public_transport_note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "street": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "travel_note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "updated_at": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "updated_by": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SmV2AwardPlayer": {
+        "type": "object",
+        "properties": {
+          "award": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "team": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "player_id": {
+            "format": "int32"
+          },
+          "trikot_number": {
+            "format": "int32"
+          },
+          "player_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "player_firstname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "plaayer_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2Awards": {
+        "type": "object",
+        "properties": {
+          "home": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2AwardPlayer"
+            }
+          },
+          "guest": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2AwardPlayer"
+            }
+          }
+        }
+      },
+      "SmV2BaseLeague": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operation_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operation_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_slug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_category_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_class_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_system_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "female": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "enable_scorer": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "season_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_day_numbers": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          "game_day_titles": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2GameDay"
+            }
+          },
+          "deadline": { },
+          "before_deadline": { },
+          "legacy_league": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "field_size": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_modus": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "has_preround": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "table_modus": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "periods": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "period_length": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "overtime_length": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SmV2Club": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "long_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "state": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "logo_url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "logo_small_url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "additional_game_operation_ids": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "null",
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "SmV2GameDay": {
+        "type": "object",
+        "properties": {
+          "game_day_number": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2GameEvent": {
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "event_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "event_team": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "period": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "home_goals": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "guest_goals": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "time": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "sortkey": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "number": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "penalty_type_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "penalty_reason": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_reason_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "assist": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "goal_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "goal_type_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2GameOperation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "path": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "logo_url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "logo_quad_url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "top_leagues": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2BaseLeague"
+            }
+          }
+        }
+      },
+      "SmV2GamePreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_number": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "start_time": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "audience": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SmV2LeaguePreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "operation_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operation": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "season": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "link_schedule": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2Penalty": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "mapping": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2PenaltyCode": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "mapping": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2PeriodTitle": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "short_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "can_end_game": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "optional": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "running": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      },
+      "SmV2Players": {
+        "type": "object",
+        "properties": {
+          "home": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2TeamPlayer"
+            }
+          },
+          "guest": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2TeamPlayer"
+            }
+          }
+        }
+      },
+      "SmV2Postfix": {
+        "type": "object",
+        "properties": {
+          "short": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "long": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2Referee": {
+        "type": "object",
+        "properties": {
+          "license_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "first_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "last_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2Result": {
+        "type": "object",
+        "properties": {
+          "home_goals": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "guest_goals": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "home_goals_period": {
+            "type": "array",
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "null",
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          "guest_goals_period": {
+            "type": "array",
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "null",
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          "postfix": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2Postfix"
+              }
+            ]
+          },
+          "forfait": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "overtime": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      },
+      "SmV2ScheduledGame": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hosting_club": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_number": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_day": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_day_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "group_identifier": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "series_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "series_number": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "home_team_filling_rule": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "home_team_filling_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "home_team_filling_parameter": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "guest_team_filling_rule": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_filling_title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_filling_parameter": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "nominated_referee_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "state": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arena": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "arena_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arena_address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arena_short": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "date": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "started": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "ended": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "home_team_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "home_team_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "home_team_small_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guest_team_small_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "referees": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2Referee"
+            }
+          },
+          "notice_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notice_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "current_period_title": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2PeriodTitle"
+              }
+            ]
+          },
+          "result_string": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "result": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SmV2Result"
+              }
+            ]
+          }
+        }
+      },
+      "SmV2ScorerPlayer": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "goals": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "assists": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_2": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_2and2": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_5": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_10": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_ms_tech": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_ms_full": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_ms1": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_ms2": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "penalty_ms3": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "player_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "team_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "team_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "first_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "last_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "image": { },
+          "image_small": { },
+          "sort": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "position": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SmV2Season": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "current": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      },
+      "SmV2StartingPlayer": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "team": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "player_id": {
+            "format": "int32"
+          },
+          "trikot_number": {
+            "format": "int32"
+          },
+          "player_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "player_firstname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "plaayer_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2StartingPlayers": {
+        "type": "object",
+        "properties": {
+          "home": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2StartingPlayer"
+            }
+          },
+          "guest": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2StartingPlayer"
+            }
+          }
+        }
+      },
+      "SmV2TableGroup": {
+        "type": "object",
+        "properties": {
+          "group_identifier": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "table": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SmV2TableTeam"
+            }
+          }
+        }
+      },
+      "SmV2TableTeam": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "won": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "draw": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "lost": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "won_ot": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "lost_ot": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "goals_scored": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "goals_received": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "goals_diff": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "points": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "team_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "team_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "team_logo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "team_logo_small": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "point_corrections": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PointCorrection"
+              }
+            ]
+          },
+          "sort": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "position": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SmV2Team": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "logo": { },
+          "league_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "cup_leagues": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "null",
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          "club_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "league_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "league_short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "game_operation_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_short_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "game_operation_slug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "syndicate": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "syndicate_clubs": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "null",
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          "logo_url": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "logo_small": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SmV2TeamPlayer": {
+        "type": "object",
+        "properties": {
+          "captain": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "goalkeeper": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "position": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "player_id": {
+            "format": "int32"
+          },
+          "trikot_number": {
+            "format": "int32"
+          },
+          "player_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "player_firstname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "plaayer_name": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       }
@@ -325,6 +2984,9 @@
   "tags": [
     {
       "name": "SaisonManager"
+    },
+    {
+      "name": "SmApiMirror"
     }
   ]
 }
