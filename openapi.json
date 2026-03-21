@@ -10,7 +10,7 @@
     }
   ],
   "paths": {
-    "/api/v2/init.json": {
+    "init.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -32,7 +32,7 @@
         }
       }
     },
-    "/api/v2/leagues.json": {
+    "leagues.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -57,7 +57,7 @@
         }
       }
     },
-    "/api/v2/games.json": {
+    "games.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -82,7 +82,7 @@
         }
       }
     },
-    "/api/v2/game_operations/{gameOperationId}/leagues.json": {
+    "game_operations/{gameOperationId}/leagues.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -119,7 +119,7 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}.json": {
+    "leagues/{leagueId}.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -153,7 +153,7 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/schedule.json": {
+    "leagues/{leagueId}/schedule.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -190,7 +190,7 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/table.json": {
+    "leagues/{leagueId}/table.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -227,7 +227,7 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/grouped_table.json": {
+    "leagues/{leagueId}/grouped_table.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -264,7 +264,7 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/scorer.json": {
+    "leagues/{leagueId}/scorer.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -301,7 +301,7 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/game_days/{gameDayNumber}/schedule.json": {
+    "leagues/{leagueId}/game_days/{gameDayNumber}/schedule.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -351,7 +351,7 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/game_days/current/schedule.json": {
+    "leagues/{leagueId}/game_days/current/schedule.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -388,7 +388,7 @@
         }
       }
     },
-    "/api/v2/admin/leagues/{leagueId}/additional_references.json": {
+    "admin/leagues/{leagueId}/additional_references.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -422,7 +422,7 @@
         }
       }
     },
-    "/api/v2/games/{gameId}.json": {
+    "games/{gameId}.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -456,7 +456,7 @@
         }
       }
     },
-    "/api/v2/penalties.json": {
+    "penalties.json": {
       "get": {
         "tags": [
           "SaisonManager"
@@ -481,7 +481,7 @@
         }
       }
     },
-    "/api/v2/penalty_codes.json": {
+    "penalty_codes.json": {
       "get": {
         "tags": [
           "SaisonManager"
