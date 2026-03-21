@@ -2969,9 +2969,6 @@
   "tags": [
     {
       "name": "SaisonManager"
-    },
-    {
-      "name": "SmApiMirror"
     }
   ]
 }
