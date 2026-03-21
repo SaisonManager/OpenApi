@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "https://saisonmanager.net/api/v2/"
+      "url": "https://saisonmanager.de/api/v2/"
     }
   ],
   "paths": {
