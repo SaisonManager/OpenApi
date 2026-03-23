@@ -5,9 +5,8 @@ on:
     branches:
       - main
     tags:
-      - '*' # Triggers the workflow when you explicitly push a tag
+      - '*'
 
-# Silences the Node 20 deprecation warning and future-proofs the runner
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -22,7 +21,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Required to fetch git history and tags for versioning
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -40,7 +39,6 @@ jobs:
       - name: Determine Variables (Version & Names)
         id: vars
         run: |
-          # --- A. Version Calculation ---
           EXACT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
           
           if [ -n "$EXACT_TAG" ]; then
@@ -57,152 +55,81 @@ jobs:
             VERSION="${RECENT_TAG}-dev-${DEV_NUM}-${SHORT_HASH}"
           fi
           
-          # Strip leading 'v' if present (e.g., v1.0.0 -> 1.0.0)
           VERSION=${VERSION#v}
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
           
-          # --- B. Package Name Calculation ---
-          # npm strictly requires lowercase names
-          NPM_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          
+          NPM_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' 'rower:')
           echo "NPM_PACKAGE_NAME=@${NPM_OWNER}/saisonmanager-api-v2" >> $GITHUB_ENV
           echo "NUGET_PACKAGE_NAME=SaisonManager.Api.V2" >> $GITHUB_ENV
 
       # ==========================================
-      # 2. CACHING DEPENDENCIES
-      # ==========================================
-      - name: Cache OpenAPI Generator
-        uses: actions/cache@v4
-        with:
-          path: ~/.openapi-generator
-          key: ${{ runner.os }}-openapi-gen-${{ hashFiles('openapi.json') }}
-          restore-keys: |
-            ${{ runner.os }}-openapi-gen-
-
-      - name: Cache NuGet Packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('openapi.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Cache NPM Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('openapi.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      # ==========================================
-      # 3. GENERATE CODE & FIX C# README
+      # 2. GENERATE CODE
       # ==========================================
       - name: Generate C# Client
         run: |
-          # Added modern .NET properties: HttpClient, System.Text.Json, and Nullable Reference Types
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g csharp -o ./generated/csharp \
             --additional-properties=packageName=${{ env.NUGET_PACKAGE_NAME }},packageVersion=${{ env.PACKAGE_VERSION }},targetFramework=net10.0,library=httpclient,useSystemTextJson=true,nullableReferenceTypes=true
-
-      - name: Stitch and Attach C# README to NuGet Package
-        run: |
-          # 1. Path variables
-          DOCS_DIR="./generated/csharp/docs/apis"
-          ROOT_README="./generated/csharp/README.md"
-          # Find the .csproj
-          CSPROJ_FILE=$(find ./generated/csharp/src -name "*.csproj" | grep -v "Test" | head -n 1)
-          PROJECT_DIR=$(dirname "$CSPROJ_FILE")
-          PROJECT_README="$PROJECT_DIR/README.md"
-          
-          # 2. Extract content from API documentation
-          # Use find to be more robust against different folder structures (apis vs Api vs docs)
-          echo "Searching for API documentation in ./generated/csharp..."
-          API_MD=$(find ./generated/csharp -name "*Api.md" | head -n 1)
-          
-          if [ -n "$API_MD" ] && [ -f "$API_MD" ]; then
-            echo "Found API documentation at $API_MD"
-            
-            # Start a fresh README with a nice header
-            echo "# SaisonManager API Client (C#)" > temp_readme.md
-            echo -e "\nThis library was automatically generated using the [OpenAPI Generator](https://openapi-generator.tech).\n" >> temp_readme.md
-            
-            # Append the main API documentation
-            cat "$API_MD" >> temp_readme.md
-            
-            # Optionally append Models if they exist (find them anywhere in docs/models)
-            MODEL_DOCS_DIR=$(find ./generated/csharp -type d -name "models" | head -n 1)
-            if [ -n "$MODEL_DOCS_DIR" ]; then
-              echo -e "\n## Models\n" >> temp_readme.md
-              find "$MODEL_DOCS_DIR" -name "*.md" | while read -r f; do
-                echo -e "\n### $(basename "$f" .md)\n" >> temp_readme.md
-                cat "$f" >> temp_readme.md
-              done
-            fi
-
-            # Clean up links: [Text](Model.md) -> [Text](#model), and remove self-references
-            sed -i 's/SaisonManagerApi\.md//g' temp_readme.md
-            sed -i 's/\.\.\/\.\.\/README\.md//g' temp_readme.md
-            sed -i 's/(\([^)]*\)\.md)/(\L#\1)/g' temp_readme.md
-            
-            # 3. Update READMEs for BOTH C# and TypeScript
-            echo "Overwriting READMEs with generated documentation..."
-            cp temp_readme.md "$ROOT_README"
-            cp temp_readme.md "$PROJECT_README"
-            
-            TS_README="./generated/typescript/README.md"
-            if [ -f "$TS_README" ]; then
-              cp temp_readme.md "$TS_README"
-            fi
-            
-            echo "First 20 lines of the new README.md:"
-            head -n 20 temp_readme.md
-          else
-            echo "Error: API documentation (*Api.md) not found in ./generated/csharp"
-            echo "Listing files to debug:"
-            ls -R ./generated/csharp
-            exit 1
-          fi
-          
-          # 4. Update .csproj Metadata (Description, URLs, and README mapping)
-          echo "Updating .csproj metadata for GitHub Packages..."
-          
-          # Fix Description
-          sed -i "/<Description>/c\    <Description>C# Client Library for SaisonManager API (Generated from OpenAPI)</Description>" "$CSPROJ_FILE"
-          
-          # Fix Repository and Project URLs
-          REPO_URL="https://github.com/${{ github.repository }}"
-          sed -i "/<RepositoryUrl>/c\    <RepositoryUrl>$REPO_URL.git</RepositoryUrl>" "$CSPROJ_FILE"
-          sed -i "/<RepositoryType>/c\    <RepositoryType>git</RepositoryType>" "$CSPROJ_FILE"
-          
-          # Inject PackageProjectUrl if it doesn't exist, or replace it
-          if grep -q "<PackageProjectUrl>" "$CSPROJ_FILE"; then
-            sed -i "/<PackageProjectUrl>/c\    <PackageProjectUrl>$REPO_URL</PackageProjectUrl>" "$CSPROJ_FILE"
-          else
-            sed -i "/<\/PropertyGroup>/i \    <PackageProjectUrl>$REPO_URL</PackageProjectUrl>" "$CSPROJ_FILE"
-          fi
-          
-          # Safely inject the README mapping
-          # We use / instead of \ for PackagePath to be safer across platforms
-          sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
-          sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
-          sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
-          
-          cat <<EOF >> "$CSPROJ_FILE"
-            <PropertyGroup>
-              <PackageReadmeFile>README.md</PackageReadmeFile>
-            </PropertyGroup>
-            <ItemGroup>
-              <None Include="README.md" Pack="true" PackagePath="/" />
-            </ItemGroup>
-          </Project>
-          EOF
 
       - name: Generate TypeScript Client
         run: |
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g typescript-fetch -o ./generated/typescript \
             --additional-properties=npmName=${{ env.NPM_PACKAGE_NAME }},npmVersion=${{ env.PACKAGE_VERSION }},supportsES6=true
+
+      # ==========================================
+      # 3. STITCH AND FIX README (The NuGet Fix)
+      # ==========================================
+      - name: Process and Attach READMEs
+        run: |
+          # Find the generated API doc
+          API_MD=$(find ./generated/csharp -name "*Api.md" | head -n 1)
+          
+          if [ -z "$API_MD" ]; then
+            echo "Error: API documentation not found."
+            exit 1
+          fi
+
+          # Create a unified README starting with a header
+          echo "# ${{ env.NUGET_PACKAGE_NAME }}" > temp_readme.md
+          echo -e "\nGenerated C# client for the SaisonManager API.\n" >> temp_readme.md
+          cat "$API_MD" >> temp_readme.md
+
+          # --- LINK CORRECTION LOGIC ---
+          # 1. Remove file-level self-references (e.g., SaisonManagerApi.md#anchor -> #anchor)
+          sed -i 's/[a-zA-Z0-9]*Api\.md#/#/g' temp_readme.md
+          
+          # 2. Fix Model links to point to internal anchors instead of external .md files
+          # Transforms [Model](Model.md) to [Model](#model)
+          sed -i -E 's/\[([^]]+)\]\(([a-zA-Z0-9]+)\.md\)/[\1](#\L\2)/g' temp_readme.md
+
+          # 3. Strip broken "Back to..." relative navigation links
+          sed -i 's|\[\[Back to README\]\](\.\.\/\.\.\/README\.md)||g' temp_readme.md
+          sed -i 's|\[\[Back to API list\]\](\.\.\/\.\.\/README\.md#documentation-for-api-endpoints)||g' temp_readme.md
+          sed -i 's|\[\[Back to Model list\]\](\.\.\/\.\.\/README\.md#documentation-for-models)||g' temp_readme.md
+
+          # --- DISTRIBUTE TO PROJECTS ---
+          # Find the primary C# .csproj
+          CSPROJ_FILE=$(find ./generated/csharp -name "*.csproj" | grep -v "Test" | head -n 1)
+          PROJECT_DIR=$(dirname "$CSPROJ_FILE")
+          
+          # Copy to project root so 'dotnet pack' can see it
+          cp temp_readme.md "$PROJECT_DIR/README.md"
+          # Copy to the root of the generated folder for general visibility
+          cp temp_readme.md "./generated/csharp/README.md"
+          # Overwrite the TS readme so it shares the same rich documentation
+          cp temp_readme.md "./generated/typescript/README.md"
+
+          # --- UPDATE CSPROJ METADATA ---
+          # Remove existing tags if they exist to prevent duplicates
+          sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
+          sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
+          
+          # Inject README mapping into the first PropertyGroup
+          sed -i '/<\/PropertyGroup>/i \    <PackageReadmeFile>README.md</PackageReadmeFile>' "$CSPROJ_FILE"
+          
+          # Inject the File include into a new ItemGroup before the end of the file
+          sed -i '/<\/Project>/i \  <ItemGroup>\n    <None Include="README.md" Pack="true" PackagePath="\\" />\n  </ItemGroup>' "$CSPROJ_FILE"
 
       # ==========================================
       # 4. BUILD THE PACKAGES
@@ -216,7 +143,7 @@ jobs:
         run: npm install && npm run build
 
       # ==========================================
-      # 5. PUBLISH TO SANDBOX REGISTRIES
+      # 5. PUBLISH
       # ==========================================
       - name: Publish C# to GitHub Packages
         working-directory: ./generated/csharp
@@ -230,10 +157,6 @@ jobs:
         run: |
           echo "registry=https://npm.pkg.github.com/" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
-          
-          npm pkg set repository.type="git"
-          npm pkg set repository.url="https://github.com/${{ github.repository }}.git"
-          
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
