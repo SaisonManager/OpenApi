@@ -2,7 +2,7 @@
 
 Dieses Repository enthält eine inoffizielle [OpenAPI-Spezifikation](openapi.json) für die **SaisonManager API (v2)**, die primär für Floorball-Spieldaten genutzt wird. 
 
-Da die externe API v2 historisch wertvolle, aber abgeschlossene Saisondaten liefert, sichert dieses Projekt den nahtlosen und typisierten Zugriff auf diese Daten, selbst wenn das Backend in Zukunft auf neuere Versionen aktualisiert wird.
+Da die externe API v2 wertvolle, aber abgeschlossene Saisondaten liefert, sichert dieses Projekt den nahtlosen und typisierten Zugriff auf diese Daten, selbst wenn das Backend in Zukunft auf neuere Versionen aktualisiert wird.
 
 Aus der OpenAPI-Spezifikation werden automatisch einsatzbereite API-Clients für **C# (.NET)** und **TypeScript** generiert und über GitHub Packages bereitgestellt.
 
