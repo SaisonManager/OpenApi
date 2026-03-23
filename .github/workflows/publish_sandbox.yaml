@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*' # Triggers the workflow when you explicitly push a tag
 
 jobs:
   sandbox-publish:
@@ -15,6 +17,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to fetch git history and tags for versioning
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -25,26 +29,89 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@${{ github.repository_owner }}'
 
       # ==========================================
-      # 1. GENERATE CODE WITH SCOPED NAMES
+      # 1. CALCULATE DYNAMIC VARIABLES
+      # ==========================================
+      - name: Determine Variables (Version & Names)
+        id: vars
+        run: |
+          # --- A. Version Calculation ---
+          EXACT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+          
+          if [ -n "$EXACT_TAG" ]; then
+            VERSION="$EXACT_TAG"
+          else
+            RECENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$RECENT_TAG" ]; then
+              RECENT_TAG="0.0.0"
+              DEV_NUM=$(git rev-list HEAD --count)
+            else
+              DEV_NUM=$(git rev-list ${RECENT_TAG}..HEAD --count)
+            fi
+            SHORT_HASH=$(git rev-parse --short HEAD)
+            VERSION="${RECENT_TAG}-dev-${DEV_NUM}-${SHORT_HASH}"
+          fi
+          
+          # Strip leading 'v' if present (e.g., v1.0.0 -> 1.0.0)
+          VERSION=${VERSION#v}
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+          
+          # --- B. Package Name Calculation ---
+          REPO_NAME="${{ github.event.repository.name }}"
+          REPO_OWNER="${{ github.repository_owner }}"
+          
+          # npm strictly requires lowercase names
+          NPM_OWNER=$(echo "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')
+          NPM_REPO=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')
+          
+          echo "NPM_PACKAGE_NAME=@${NPM_OWNER}/${NPM_REPO}" >> $GITHUB_ENV
+          echo "NUGET_PACKAGE_NAME=${REPO_OWNER}.${REPO_NAME}.Core" >> $GITHUB_ENV
+
+      # ==========================================
+      # 2. CACHING DEPENDENCIES
+      # ==========================================
+      - name: Cache OpenAPI Generator
+        uses: actions/cache@v4
+        with:
+          path: ~/.openapi-generator
+          key: ${{ runner.os }}-openapi-gen-${{ hashFiles('openapi.json') }}
+          restore-keys: |
+            ${{ runner.os }}-openapi-gen-
+
+      - name: Cache NuGet Packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('openapi.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Cache NPM Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('openapi.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      # ==========================================
+      # 3. GENERATE CODE
       # ==========================================
       - name: Generate C# Client
         run: |
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g csharp -o ./generated/csharp \
-            --additional-properties=packageName=${{ github.repository_owner }}.MyApiClient.Core,packageVersion=0.1.0-dev${{ github.run_number }},targetFramework=net10.0
+            --additional-properties=packageName=${{ env.NUGET_PACKAGE_NAME }},packageVersion=${{ env.PACKAGE_VERSION }},targetFramework=net10.0
 
       - name: Generate TypeScript Client
         run: |
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g typescript-fetch -o ./generated/typescript \
-            --additional-properties=npmName=@${{ github.repository_owner }}/my-api-client-ts,npmVersion=0.1.0-dev.${{ github.run_number }},supportsES6=true
+            --additional-properties=npmName=${{ env.NPM_PACKAGE_NAME }},npmVersion=${{ env.PACKAGE_VERSION }},supportsES6=true
 
       # ==========================================
-      # 2. BUILD THE PACKAGES
+      # 4. BUILD THE PACKAGES
       # ==========================================
       - name: Build C#
         working-directory: ./generated/csharp
@@ -55,7 +122,7 @@ jobs:
         run: npm install && npm run build
 
       # ==========================================
-      # 3. PUBLISH TO SANDBOX REGISTRIES
+      # 5. PUBLISH TO SANDBOX REGISTRIES
       # ==========================================
       - name: Publish C# to GitHub Packages
         working-directory: ./generated/csharp
