@@ -7,6 +7,10 @@ on:
     tags:
       - '*' # Triggers the workflow when you explicitly push a tag
 
+# Silences the Node 20 deprecation warning and future-proofs the runner
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   sandbox-publish:
     runs-on: ubuntu-latest
@@ -96,23 +100,31 @@ jobs:
       # ==========================================
       - name: Generate C# Client
         run: |
+          # Added modern .NET properties: HttpClient, System.Text.Json, and Nullable Reference Types
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g csharp -o ./generated/csharp \
-            --additional-properties=packageName=${{ env.NUGET_PACKAGE_NAME }},packageVersion=${{ env.PACKAGE_VERSION }},targetFramework=net10.0
+            --additional-properties=packageName=${{ env.NUGET_PACKAGE_NAME }},packageVersion=${{ env.PACKAGE_VERSION }},targetFramework=net10.0,library=httpclient,useSystemTextJson=true,nullableReferenceTypes=true
 
-      - name: Attach Generated C# README to NuGet Package
+      - name: Stitch and Attach C# README to NuGet Package
         run: |
-          # 1. Find the main .csproj file (ignoring the .Test project)
+          # 1. Find the main .csproj file
           CSPROJ_FILE=$(find ./generated/csharp/src -name "*.csproj" | grep -v "Test" | head -n 1)
           CSPROJ_DIR=$(dirname "$CSPROJ_FILE")
           
-          # 2. Copy the generated C# README directly into that specific project folder
-          cp ./generated/csharp/README.md "$CSPROJ_DIR/README.md"
+          # 2. Start with the base README
+          cat ./generated/csharp/README.md > "$CSPROJ_DIR/README.md"
           
-          # 3. Strip out any existing PackageReadmeFile lines to avoid MSBuild conflicts
+          # 3. Iterate through the hidden docs/ folder and append all C# code examples!
+          echo -e "\n\n## API Endpoints & Code Examples\n" >> "$CSPROJ_DIR/README.md"
+          for apidoc in ./generated/csharp/docs/*Api.md; do
+            if [ -f "$apidoc" ]; then
+              cat "$apidoc" >> "$CSPROJ_DIR/README.md"
+              echo -e "\n---\n" >> "$CSPROJ_DIR/README.md"
+            fi
+          done
+          
+          # 4. Safely inject the README mapping into the .csproj
           sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
-          
-          # 4. Safely append the README configuration directly into the .csproj
           sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
           cat <<EOF >> "$CSPROJ_FILE"
             <PropertyGroup>
@@ -154,15 +166,12 @@ jobs:
       - name: Publish TypeScript to GitHub Packages
         working-directory: ./generated/typescript
         run: |
-          # 1. Force npm to use GitHub Packages and configure auth locally
           echo "registry=https://npm.pkg.github.com/" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
           
-          # 2. Inject the required repository URL into package.json
           npm pkg set repository.type="git"
           npm pkg set repository.url="https://github.com/${{ github.repository }}.git"
           
-          # 3. Publish the package
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
