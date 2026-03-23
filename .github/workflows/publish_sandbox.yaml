@@ -102,18 +102,24 @@ jobs:
 
       - name: Attach Generated C# README to NuGet Package
         run: |
-          # 1. Copy the README into the src directory so it is universally accessible
-          cp ./generated/csharp/README.md ./generated/csharp/src/README.md
+          # 1. Find the main .csproj file (ignoring the .Test project)
+          CSPROJ_FILE=$(find ./generated/csharp/src -name "*.csproj" | grep -v "Test" | head -n 1)
+          CSPROJ_DIR=$(dirname "$CSPROJ_FILE")
           
-          # 2. Use a quoted 'EOF' to prevent bash from breaking the MSBuild variables.
-          # The $(MSBuildThisFileDirectory) guarantees .NET finds the copied README.
-          cat <<'EOF' > ./generated/csharp/src/Directory.Build.props
-          <Project>
+          # 2. Copy the generated C# README directly into that specific project folder
+          cp ./generated/csharp/README.md "$CSPROJ_DIR/README.md"
+          
+          # 3. Strip out any existing PackageReadmeFile lines to avoid MSBuild conflicts
+          sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
+          
+          # 4. Safely append the README configuration directly into the .csproj
+          sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
+          cat <<EOF >> "$CSPROJ_FILE"
             <PropertyGroup>
               <PackageReadmeFile>README.md</PackageReadmeFile>
             </PropertyGroup>
             <ItemGroup>
-              <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+              <None Include="README.md" Pack="true" PackagePath="\\" />
             </ItemGroup>
           </Project>
           EOF
@@ -148,12 +154,15 @@ jobs:
       - name: Publish TypeScript to GitHub Packages
         working-directory: ./generated/typescript
         run: |
+          # 1. Force npm to use GitHub Packages and configure auth locally
           echo "registry=https://npm.pkg.github.com/" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
           
+          # 2. Inject the required repository URL into package.json
           npm pkg set repository.type="git"
           npm pkg set repository.url="https://github.com/${{ github.repository }}.git"
           
+          # 3. Publish the package
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
