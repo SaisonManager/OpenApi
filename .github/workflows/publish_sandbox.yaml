@@ -102,21 +102,16 @@ jobs:
 
       - name: Attach Generated C# README to NuGet Package
         run: |
-          # Find the generated .csproj file and its directory
-          CSPROJ_FILE=$(find ./generated/csharp/src -name "*.csproj" | head -n 1)
-          CSPROJ_DIR=$(dirname "$CSPROJ_FILE")
-          
-          # Copy the generated README.md right next to the .csproj to avoid pathing issues
-          cp ./generated/csharp/README.md "$CSPROJ_DIR/README.md"
-          
-          # Inject the PackageReadmeFile property into the .csproj
-          sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
-          cat <<EOF >> "$CSPROJ_FILE"
+          # Create a Directory.Build.props file in the C# source directory.
+          # This universally tells the .NET compiler to look one folder up, grab the 
+          # generated C# README with the examples, and embed it into the .nupkg file.
+          cat <<EOF > ./generated/csharp/src/Directory.Build.props
+          <Project>
             <PropertyGroup>
               <PackageReadmeFile>README.md</PackageReadmeFile>
             </PropertyGroup>
             <ItemGroup>
-              <None Include="README.md" Pack="true" PackagePath="\\" />
+              <None Include="../README.md" Pack="true" PackagePath="\\" />
             </ItemGroup>
           </Project>
           EOF
