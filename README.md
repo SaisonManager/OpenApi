@@ -6,3 +6,4 @@ OpenApi Dokumentation für die SaisonManager Api
 
 Kann über https://sm-openapi.floorball.fan/ aufgerufen werden.
 
+Zum einbinden in Javascript/Typescript oder .net C# siehe: [Packages](https://github.com/orgs/SaisonManager/packages?repo_name=OpenApi)
