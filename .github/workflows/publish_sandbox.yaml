@@ -145,9 +145,18 @@ jobs:
             sed -i 's/\.\.\/\.\.\/README\.md//g' temp_readme.md
             sed -i 's/(\([^)]*\)\.md)/(\L#\1)/g' temp_readme.md
             
-            # Overwrite BOTH root and project readmes
+            # 3. Update READMEs for BOTH C# and TypeScript
+            echo "Overwriting READMEs with generated documentation..."
             cp temp_readme.md "$ROOT_README"
             cp temp_readme.md "$PROJECT_README"
+            
+            TS_README="./generated/typescript/README.md"
+            if [ -f "$TS_README" ]; then
+              cp temp_readme.md "$TS_README"
+            fi
+            
+            echo "First 20 lines of the new README.md:"
+            head -n 20 temp_readme.md
           else
             echo "Error: API documentation (*Api.md) not found in ./generated/csharp"
             echo "Listing files to debug:"
@@ -155,10 +164,26 @@ jobs:
             exit 1
           fi
           
-          # 3. Update .csproj Description and README mapping
+          # 4. Update .csproj Metadata (Description, URLs, and README mapping)
+          echo "Updating .csproj metadata for GitHub Packages..."
+          
+          # Fix Description
           sed -i "/<Description>/c\    <Description>C# Client Library for SaisonManager API (Generated from OpenAPI)</Description>" "$CSPROJ_FILE"
           
+          # Fix Repository and Project URLs
+          REPO_URL="https://github.com/${{ github.repository }}"
+          sed -i "/<RepositoryUrl>/c\    <RepositoryUrl>$REPO_URL.git</RepositoryUrl>" "$CSPROJ_FILE"
+          sed -i "/<RepositoryType>/c\    <RepositoryType>git</RepositoryType>" "$CSPROJ_FILE"
+          
+          # Inject PackageProjectUrl if it doesn't exist, or replace it
+          if grep -q "<PackageProjectUrl>" "$CSPROJ_FILE"; then
+            sed -i "/<PackageProjectUrl>/c\    <PackageProjectUrl>$REPO_URL</PackageProjectUrl>" "$CSPROJ_FILE"
+          else
+            sed -i "/<\/PropertyGroup>/i \    <PackageProjectUrl>$REPO_URL</PackageProjectUrl>" "$CSPROJ_FILE"
+          fi
+          
           # Safely inject the README mapping
+          # We use / instead of \ for PackagePath to be safer across platforms
           sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
           sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
           sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
@@ -168,7 +193,7 @@ jobs:
               <PackageReadmeFile>README.md</PackageReadmeFile>
             </PropertyGroup>
             <ItemGroup>
-              <None Include="README.md" Pack="true" PackagePath="\\" />
+              <None Include="README.md" Pack="true" PackagePath="/" />
             </ItemGroup>
           </Project>
           EOF
