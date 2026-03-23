@@ -1,0 +1,95 @@
+name: Sandbox Publish (Dev Branch)
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  sandbox-publish:
+    runs-on: ubuntu-latest
+    # We need to explicitly grant permission to the GITHUB_TOKEN to write packages
+    permissions:
+      contents: read
+      packages: write 
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # The registry-url points to GitHub, not standard npm
+      - name: Setup Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@${{ github.repository_owner }}'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # ==========================================
+      # 1. GENERATE CODE WITH SCOPED NAMES
+      # ==========================================
+      - name: Generate TypeScript Client
+        run: |
+          # We prefix the npm name with your github username (e.g., @beyer/my-api-client-ts)
+          npx @openapitools/openapi-generator-cli generate \
+            -i openapi.json -g typescript-fetch -o ./generated/typescript \
+            --additional-properties=npmName=@${{ github.repository_owner }}/my-api-client-ts,npmVersion=0.1.0-dev.${{ github.run_number }},supportsES6=true
+
+      - name: Generate Python Client
+        run: |
+          npx @openapitools/openapi-generator-cli generate \
+            -i openapi.json -g python -o ./generated/python \
+            --additional-properties=packageName=my_api_client_py,packageVersion=0.1.0.dev${{ github.run_number }}
+
+      - name: Generate C# Client
+        run: |
+          npx @openapitools/openapi-generator-cli generate \
+            -i openapi.json -g csharp -o ./generated/csharp \
+            --additional-properties=packageName=${{ github.repository_owner }}.MyApiClient.Core,packageVersion=0.1.0-dev${{ github.run_number }},targetFramework=net10.0
+
+      # ==========================================
+      # 2. BUILD THE PACKAGES
+      # ==========================================
+      - name: Build TypeScript
+        working-directory: ./generated/typescript
+        run: npm install && npm run build
+
+      - name: Build Python
+        working-directory: ./generated/python
+        run: pip install setuptools wheel && python setup.py bdist_wheel
+
+      - name: Build C#
+        working-directory: ./generated/csharp
+        run: dotnet pack -c Release
+
+      # ==========================================
+      # 3. PUBLISH TO SANDBOX REGISTRIES
+      # ==========================================
+      - name: Publish TypeScript to GitHub Packages
+        working-directory: ./generated/typescript
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish C# to GitHub Packages
+        working-directory: ./generated/csharp
+        run: |
+          dotnet nuget push src/*/bin/Release/*.nupkg \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+      - name: Publish Python to TestPyPI
+        working-directory: ./generated/python
+        run: |
+          pip install twine
+          twine upload --repository testpypi dist/* -u __token__ -p ${{ secrets.TEST_PYPI_TOKEN }}
