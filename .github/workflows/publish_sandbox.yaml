@@ -102,16 +102,18 @@ jobs:
 
       - name: Attach Generated C# README to NuGet Package
         run: |
-          # Create a Directory.Build.props file in the C# source directory.
-          # This universally tells the .NET compiler to look one folder up, grab the 
-          # generated C# README with the examples, and embed it into the .nupkg file.
-          cat <<EOF > ./generated/csharp/src/Directory.Build.props
+          # 1. Copy the README into the src directory so it is universally accessible
+          cp ./generated/csharp/README.md ./generated/csharp/src/README.md
+          
+          # 2. Use a quoted 'EOF' to prevent bash from breaking the MSBuild variables.
+          # The $(MSBuildThisFileDirectory) guarantees .NET finds the copied README.
+          cat <<'EOF' > ./generated/csharp/src/Directory.Build.props
           <Project>
             <PropertyGroup>
               <PackageReadmeFile>README.md</PackageReadmeFile>
             </PropertyGroup>
             <ItemGroup>
-              <None Include="../README.md" Pack="true" PackagePath="\\" />
+              <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
             </ItemGroup>
           </Project>
           EOF
@@ -146,15 +148,12 @@ jobs:
       - name: Publish TypeScript to GitHub Packages
         working-directory: ./generated/typescript
         run: |
-          # 1. Force npm to use GitHub Packages and configure auth locally
           echo "registry=https://npm.pkg.github.com/" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
           
-          # 2. Inject the required repository URL into package.json
           npm pkg set repository.type="git"
           npm pkg set repository.url="https://github.com/${{ github.repository }}.git"
           
-          # 3. Publish the package
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
