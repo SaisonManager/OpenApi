@@ -58,15 +58,11 @@ jobs:
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
           
           # --- B. Package Name Calculation ---
-          REPO_NAME="${{ github.event.repository.name }}"
-          REPO_OWNER="${{ github.repository_owner }}"
-          
           # npm strictly requires lowercase names
-          NPM_OWNER=$(echo "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')
-          NPM_REPO=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')
+          NPM_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           
-          echo "NPM_PACKAGE_NAME=@${NPM_OWNER}/${NPM_REPO}" >> $GITHUB_ENV
-          echo "NUGET_PACKAGE_NAME=${REPO_OWNER}.${REPO_NAME}.Core" >> $GITHUB_ENV
+          echo "NPM_PACKAGE_NAME=@${NPM_OWNER}/saisonmanager-api-v2" >> $GITHUB_ENV
+          echo "NUGET_PACKAGE_NAME=SaisonManager.Api.V2" >> $GITHUB_ENV
 
       # ==========================================
       # 2. CACHING DEPENDENCIES
@@ -96,13 +92,34 @@ jobs:
             ${{ runner.os }}-npm-
 
       # ==========================================
-      # 3. GENERATE CODE
+      # 3. GENERATE CODE & FIX C# README
       # ==========================================
       - name: Generate C# Client
         run: |
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g csharp -o ./generated/csharp \
             --additional-properties=packageName=${{ env.NUGET_PACKAGE_NAME }},packageVersion=${{ env.PACKAGE_VERSION }},targetFramework=net10.0
+
+      - name: Attach Generated C# README to NuGet Package
+        run: |
+          # Find the generated .csproj file and its directory
+          CSPROJ_FILE=$(find ./generated/csharp/src -name "*.csproj" | head -n 1)
+          CSPROJ_DIR=$(dirname "$CSPROJ_FILE")
+          
+          # Copy the generated README.md right next to the .csproj to avoid pathing issues
+          cp ./generated/csharp/README.md "$CSPROJ_DIR/README.md"
+          
+          # Inject the PackageReadmeFile property into the .csproj
+          sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
+          cat <<EOF >> "$CSPROJ_FILE"
+            <PropertyGroup>
+              <PackageReadmeFile>README.md</PackageReadmeFile>
+            </PropertyGroup>
+            <ItemGroup>
+              <None Include="README.md" Pack="true" PackagePath="\\" />
+            </ItemGroup>
+          </Project>
+          EOF
 
       - name: Generate TypeScript Client
         run: |
