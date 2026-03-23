@@ -39,7 +39,7 @@ jobs:
       - name: Determine Variables (Version & Names)
         id: vars
         run: |
-          # --- Version Calculation ---
+          # --- A. Version Calculation ---
           EXACT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
           if [ -n "$EXACT_TAG" ]; then
             VERSION="$EXACT_TAG"
@@ -54,11 +54,16 @@ jobs:
             SHORT_HASH=$(git rev-parse --short HEAD)
             VERSION="${RECENT_TAG}-dev-${DEV_NUM}-${SHORT_HASH}"
           fi
+          
+          # Strip leading 'v'
           VERSION=${VERSION#v}
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
           
-          # --- Fixed Lowercase Logic ---
+          # --- B. Scopes and Names (Strict Lowercase for NPM) ---
           OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          
+          # Export globally so subsequent steps can use them safely
+          echo "NPM_SCOPE=@${OWNER_LC}" >> $GITHUB_ENV
           echo "NPM_PACKAGE_NAME=@${OWNER_LC}/saisonmanager-api-v2" >> $GITHUB_ENV
           echo "NUGET_PACKAGE_NAME=SaisonManager.Api.V2" >> $GITHUB_ENV
 
@@ -82,25 +87,21 @@ jobs:
       # ==========================================
       - name: Process and Attach READMEs
         run: |
-          # Find the generated API doc (usually in docs/apis/ or docs/)
+          # Find the generated API doc (fails safely if missing)
           API_MD=$(find ./generated/csharp -name "*Api.md" | head -n 1)
-          
-          if [ -z "$API_MD" ]; then
-            echo "Error: API documentation not found."
-            exit 1
-          fi
+          if [ -z "$API_MD" ]; then echo "Error: API documentation not found."; exit 1; fi
 
           # 1. Build a clean README starting with the API info
           echo "# ${{ env.NUGET_PACKAGE_NAME }}" > temp_readme.md
-          echo -e "\nOfficial C# Client for the SaisonManager API.\n" >> temp_readme.md
+          echo -e "\nOfficial Client for the SaisonManager API.\n" >> temp_readme.md
           cat "$API_MD" >> temp_readme.md
 
-          # 2. Link Correction
-          # Remove file self-references
+          # 2. Link Correction Logic
+          # Remove self-references
           sed -i 's/[a-zA-Z0-9]*Api\.md#/#/g' temp_readme.md
-          # Convert [Model](Model.md) to [Model](#model) with lowercase anchors
-          sed -i -E 's/\[([^]]+)\]\(([a-zA-Z0-9]+)\.md\)/[\1](#\L\2)/g' temp_readme.md
-          # Remove relative breadcrumbs that break in packages
+          # Convert [Model](Model.md) to [Model](#model) (supports hyphens/underscores)
+          sed -i -E 's/\[([^]]+)\]\(([a-zA-Z0-9_.-]+)\.md\)/[\1](#\L\2)/g' temp_readme.md
+          # Remove broken relative "Back to..." links
           sed -i 's|\[\[Back to README\]\](\.\.\/\.\.\/README\.md)||g' temp_readme.md
           sed -i 's|\[\[Back to API list\]\](\.\.\/\.\.\/README\.md#documentation-for-api-endpoints)||g' temp_readme.md
           sed -i 's|\[\[Back to Model list\]\](\.\.\/\.\.\/README\.md#documentation-for-models)||g' temp_readme.md
@@ -113,17 +114,24 @@ jobs:
           cp temp_readme.md "./generated/csharp/README.md"
           cp temp_readme.md "./generated/typescript/README.md"
 
-          # 4. Inject into .csproj
-          # Clean old entries
+          # 4. Safely Inject into .csproj without breaking XML
           sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
           sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
           
-          # Inject new metadata
+          # Inject property
           sed -i '/<\/PropertyGroup>/i \    <PackageReadmeFile>README.md</PackageReadmeFile>' "$CSPROJ_FILE"
-          sed -i '/<\/Project>/i \  <ItemGroup>\n    <None Include="README.md" Pack="true" PackagePath="\\" />\n  </ItemGroup>' "$CSPROJ_FILE"
+          
+          # Append ItemGroup robustly
+          sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
+          cat <<EOF >> "$CSPROJ_FILE"
+            <ItemGroup>
+              <None Include="README.md" Pack="true" PackagePath="/" />
+            </ItemGroup>
+          </Project>
+          EOF
 
       # ==========================================
-      # 4. BUILD AND PUBLISH
+      # 4. BUILD AND PUBLISH C#
       # ==========================================
       - name: Build and Pack C#
         working-directory: ./generated/csharp
@@ -132,15 +140,22 @@ jobs:
       - name: Publish C#
         working-directory: ./generated/csharp
         run: |
+          # Added --skip-duplicate to gracefully handle workflow re-runs
           dotnet nuget push src/*/bin/Release/*.nupkg \
             --api-key ${{ secrets.GITHUB_TOKEN }} \
-            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --skip-duplicate
 
+      # ==========================================
+      # 5. BUILD AND PUBLISH TYPESCRIPT
+      # ==========================================
       - name: Build and Publish TypeScript
         working-directory: ./generated/typescript
         run: |
-          echo "registry=https://npm.pkg.github.com/" > .npmrc
+          # Use the globally exported NPM_SCOPE for a perfectly scoped registry
+          echo "${{ env.NPM_SCOPE }}:registry=https://npm.pkg.github.com" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
+          
           npm install
           npm run build
           npm publish
