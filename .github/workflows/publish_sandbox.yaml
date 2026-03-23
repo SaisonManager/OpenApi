@@ -39,8 +39,8 @@ jobs:
       - name: Determine Variables (Version & Names)
         id: vars
         run: |
+          # --- Version Calculation ---
           EXACT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
-          
           if [ -n "$EXACT_TAG" ]; then
             VERSION="$EXACT_TAG"
           else
@@ -54,35 +54,35 @@ jobs:
             SHORT_HASH=$(git rev-parse --short HEAD)
             VERSION="${RECENT_TAG}-dev-${DEV_NUM}-${SHORT_HASH}"
           fi
-          
           VERSION=${VERSION#v}
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
           
-          NPM_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' 'rower:')
-          echo "NPM_PACKAGE_NAME=@${NPM_OWNER}/saisonmanager-api-v2" >> $GITHUB_ENV
+          # --- Fixed Lowercase Logic ---
+          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "NPM_PACKAGE_NAME=@${OWNER_LC}/saisonmanager-api-v2" >> $GITHUB_ENV
           echo "NUGET_PACKAGE_NAME=SaisonManager.Api.V2" >> $GITHUB_ENV
 
       # ==========================================
       # 2. GENERATE CODE
       # ==========================================
-      - name: Generate C# Client
+      - name: Generate Clients
         run: |
+          # C#
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g csharp -o ./generated/csharp \
             --additional-properties=packageName=${{ env.NUGET_PACKAGE_NAME }},packageVersion=${{ env.PACKAGE_VERSION }},targetFramework=net10.0,library=httpclient,useSystemTextJson=true,nullableReferenceTypes=true
 
-      - name: Generate TypeScript Client
-        run: |
+          # TypeScript
           npx @openapitools/openapi-generator-cli generate \
             -i openapi.json -g typescript-fetch -o ./generated/typescript \
             --additional-properties=npmName=${{ env.NPM_PACKAGE_NAME }},npmVersion=${{ env.PACKAGE_VERSION }},supportsES6=true
 
       # ==========================================
-      # 3. STITCH AND FIX README (The NuGet Fix)
+      # 3. STITCH AND FIX README
       # ==========================================
       - name: Process and Attach READMEs
         run: |
-          # Find the generated API doc
+          # Find the generated API doc (usually in docs/apis/ or docs/)
           API_MD=$(find ./generated/csharp -name "*Api.md" | head -n 1)
           
           if [ -z "$API_MD" ]; then
@@ -90,73 +90,59 @@ jobs:
             exit 1
           fi
 
-          # Create a unified README starting with a header
+          # 1. Build a clean README starting with the API info
           echo "# ${{ env.NUGET_PACKAGE_NAME }}" > temp_readme.md
-          echo -e "\nGenerated C# client for the SaisonManager API.\n" >> temp_readme.md
+          echo -e "\nOfficial C# Client for the SaisonManager API.\n" >> temp_readme.md
           cat "$API_MD" >> temp_readme.md
 
-          # --- LINK CORRECTION LOGIC ---
-          # 1. Remove file-level self-references (e.g., SaisonManagerApi.md#anchor -> #anchor)
+          # 2. Link Correction
+          # Remove file self-references
           sed -i 's/[a-zA-Z0-9]*Api\.md#/#/g' temp_readme.md
-          
-          # 2. Fix Model links to point to internal anchors instead of external .md files
-          # Transforms [Model](Model.md) to [Model](#model)
+          # Convert [Model](Model.md) to [Model](#model) with lowercase anchors
           sed -i -E 's/\[([^]]+)\]\(([a-zA-Z0-9]+)\.md\)/[\1](#\L\2)/g' temp_readme.md
-
-          # 3. Strip broken "Back to..." relative navigation links
+          # Remove relative breadcrumbs that break in packages
           sed -i 's|\[\[Back to README\]\](\.\.\/\.\.\/README\.md)||g' temp_readme.md
           sed -i 's|\[\[Back to API list\]\](\.\.\/\.\.\/README\.md#documentation-for-api-endpoints)||g' temp_readme.md
           sed -i 's|\[\[Back to Model list\]\](\.\.\/\.\.\/README\.md#documentation-for-models)||g' temp_readme.md
 
-          # --- DISTRIBUTE TO PROJECTS ---
-          # Find the primary C# .csproj
+          # 3. Distribute to Project Folders
           CSPROJ_FILE=$(find ./generated/csharp -name "*.csproj" | grep -v "Test" | head -n 1)
           PROJECT_DIR=$(dirname "$CSPROJ_FILE")
           
-          # Copy to project root so 'dotnet pack' can see it
           cp temp_readme.md "$PROJECT_DIR/README.md"
-          # Copy to the root of the generated folder for general visibility
           cp temp_readme.md "./generated/csharp/README.md"
-          # Overwrite the TS readme so it shares the same rich documentation
           cp temp_readme.md "./generated/typescript/README.md"
 
-          # --- UPDATE CSPROJ METADATA ---
-          # Remove existing tags if they exist to prevent duplicates
+          # 4. Inject into .csproj
+          # Clean old entries
           sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
           sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
           
-          # Inject README mapping into the first PropertyGroup
+          # Inject new metadata
           sed -i '/<\/PropertyGroup>/i \    <PackageReadmeFile>README.md</PackageReadmeFile>' "$CSPROJ_FILE"
-          
-          # Inject the File include into a new ItemGroup before the end of the file
           sed -i '/<\/Project>/i \  <ItemGroup>\n    <None Include="README.md" Pack="true" PackagePath="\\" />\n  </ItemGroup>' "$CSPROJ_FILE"
 
       # ==========================================
-      # 4. BUILD THE PACKAGES
+      # 4. BUILD AND PUBLISH
       # ==========================================
-      - name: Build C#
+      - name: Build and Pack C#
         working-directory: ./generated/csharp
         run: dotnet pack -c Release
 
-      - name: Build TypeScript
-        working-directory: ./generated/typescript
-        run: npm install && npm run build
-
-      # ==========================================
-      # 5. PUBLISH
-      # ==========================================
-      - name: Publish C# to GitHub Packages
+      - name: Publish C#
         working-directory: ./generated/csharp
         run: |
           dotnet nuget push src/*/bin/Release/*.nupkg \
             --api-key ${{ secrets.GITHUB_TOKEN }} \
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
-      - name: Publish TypeScript to GitHub Packages
+      - name: Build and Publish TypeScript
         working-directory: ./generated/typescript
         run: |
           echo "registry=https://npm.pkg.github.com/" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
+          npm install
+          npm run build
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
