@@ -1,9 +1,9 @@
-name: Sandbox Publish (Dev Branch)
+name: Sandbox Publish
 
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   sandbox-publish:
@@ -25,11 +25,6 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@${{ github.repository_owner }}'
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -45,12 +40,6 @@ jobs:
             -i openapi.json -g typescript-fetch -o ./generated/typescript \
             --additional-properties=npmName=@${{ github.repository_owner }}/my-api-client-ts,npmVersion=0.1.0-dev.${{ github.run_number }},supportsES6=true
 
-      - name: Generate Python Client
-        run: |
-          npx @openapitools/openapi-generator-cli generate \
-            -i openapi.json -g python -o ./generated/python \
-            --additional-properties=packageName=my_api_client_py,packageVersion=0.1.0.dev${{ github.run_number }}
-
       - name: Generate C# Client
         run: |
           npx @openapitools/openapi-generator-cli generate \
@@ -63,10 +52,6 @@ jobs:
       - name: Build TypeScript
         working-directory: ./generated/typescript
         run: npm install && npm run build
-
-      - name: Build Python
-        working-directory: ./generated/python
-        run: pip install setuptools wheel && python setup.py bdist_wheel
 
       - name: Build C#
         working-directory: ./generated/csharp
@@ -87,9 +72,3 @@ jobs:
           dotnet nuget push src/*/bin/Release/*.nupkg \
             --api-key ${{ secrets.GITHUB_TOKEN }} \
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-
-      - name: Publish Python to TestPyPI
-        working-directory: ./generated/python
-        run: |
-          pip install twine
-          twine upload --repository testpypi dist/* -u __token__ -p ${{ secrets.TEST_PYPI_TOKEN }}
