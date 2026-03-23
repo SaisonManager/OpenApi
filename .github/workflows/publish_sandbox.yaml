@@ -115,11 +115,12 @@ jobs:
           PROJECT_DIR=$(dirname "$CSPROJ_FILE")
           PROJECT_README="$PROJECT_DIR/README.md"
           
-          # 2. Extract content from SaisonManagerApi.md
-          # Search for any file ending in Api.md in the apis folder
-          API_MD=$(ls $DOCS_DIR/*Api.md | head -n 1)
+          # 2. Extract content from API documentation
+          # Use find to be more robust against different folder structures (apis vs Api vs docs)
+          echo "Searching for API documentation in ./generated/csharp..."
+          API_MD=$(find ./generated/csharp -name "*Api.md" | head -n 1)
           
-          if [ -f "$API_MD" ]; then
+          if [ -n "$API_MD" ] && [ -f "$API_MD" ]; then
             echo "Found API documentation at $API_MD"
             
             # Start a fresh README with a nice header
@@ -129,14 +130,13 @@ jobs:
             # Append the main API documentation
             cat "$API_MD" >> temp_readme.md
             
-            # Optionally append Models if they exist
-            if [ -d "./generated/csharp/docs/models" ]; then
+            # Optionally append Models if they exist (find them anywhere in docs/models)
+            MODEL_DOCS_DIR=$(find ./generated/csharp -type d -name "models" | head -n 1)
+            if [ -n "$MODEL_DOCS_DIR" ]; then
               echo -e "\n## Models\n" >> temp_readme.md
-              for f in ./generated/csharp/docs/models/*.md; do
-                if [ -f "$f" ]; then
-                  echo -e "\n### $(basename "$f" .md)\n" >> temp_readme.md
-                  cat "$f" >> temp_readme.md
-                fi
+              find "$MODEL_DOCS_DIR" -name "*.md" | while read -r f; do
+                echo -e "\n### $(basename "$f" .md)\n" >> temp_readme.md
+                cat "$f" >> temp_readme.md
               done
             fi
 
@@ -145,11 +145,13 @@ jobs:
             sed -i 's/\.\.\/\.\.\/README\.md//g' temp_readme.md
             sed -i 's/(\([^)]*\)\.md)/(\L#\1)/g' temp_readme.md
             
-            # Overwrite BOTH root and project readmes to be absolutely sure NuGet finds it
+            # Overwrite BOTH root and project readmes
             cp temp_readme.md "$ROOT_README"
             cp temp_readme.md "$PROJECT_README"
           else
-            echo "Error: API documentation not found at $DOCS_DIR"
+            echo "Error: API documentation (*Api.md) not found in ./generated/csharp"
+            echo "Listing files to debug:"
+            ls -R ./generated/csharp
             exit 1
           fi
           
