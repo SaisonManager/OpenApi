@@ -111,21 +111,41 @@ jobs:
           CSPROJ_FILE=$(find ./generated/csharp/src -name "*.csproj" | grep -v "Test" | head -n 1)
           CSPROJ_DIR=$(dirname "$CSPROJ_FILE")
           
-          # 2. Start with the base README
-          cat ./generated/csharp/README.md > "$CSPROJ_DIR/README.md"
+          # 2. Reset the README and add a header
+          echo "# SaisonManager API Client (C#)" > "$CSPROJ_DIR/README.md"
+          echo -e "\nThis library was automatically generated using the [OpenAPI Generator](https://openapi-generator.tech).\n" >> "$CSPROJ_DIR/README.md"
           
-          # 3. Iterate through the hidden docs/ folder and append all C# code examples!
-          echo -e "\n\n## API Endpoints & Code Examples\n" >> "$CSPROJ_DIR/README.md"
-          for apidoc in ./generated/csharp/docs/*Api.md; do
-            if [ -f "$apidoc" ]; then
-              cat "$apidoc" >> "$CSPROJ_DIR/README.md"
+          # 3. Concatenate API Documentation (found in docs/apis/)
+          echo -e "\n## API Endpoints\n" >> "$CSPROJ_DIR/README.md"
+          for f in ./generated/csharp/docs/apis/*.md; do
+            if [ -f "$f" ]; then
+              # Inject section header for easier linking
+              echo -e "\n### $(basename "$f" .md)\n" >> "$CSPROJ_DIR/README.md"
+              # Inject file content and fix recursive references back to the file itself or parent README
+              sed -e 's/SaisonManagerApi\.md//g' -e 's/\.\.\/\.\.\/README\.md//g' "$f" >> "$CSPROJ_DIR/README.md"
+              echo -e "\n---\n" >> "$CSPROJ_DIR/README.md"
+            fi
+          done
+
+          # 4. Concatenate Model Documentation (found in docs/models/)
+          echo -e "\n## Models\n" >> "$CSPROJ_DIR/README.md"
+          for f in ./generated/csharp/docs/models/*.md; do
+            if [ -f "$f" ]; then
+              # Inject section header for easier linking
+              echo -e "\n### $(basename "$f" .md)\n" >> "$CSPROJ_DIR/README.md"
+              # Inject file content and fix cross-references/README links
+              # Transforms [Text](Model.md) into [Text](#model)
+              sed -e 's/(\([^)]*\)\.md)/(\L#\1)/g' -e 's/\.\.\/\.\.\/README\.md//g' "$f" >> "$CSPROJ_DIR/README.md"
               echo -e "\n---\n" >> "$CSPROJ_DIR/README.md"
             fi
           done
           
-          # 4. Safely inject the README mapping into the .csproj
+          # 5. Safely inject the README mapping into the .csproj
+          # We remove any existing entries first to avoid duplicates
           sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
+          sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
           sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
+          
           cat <<EOF >> "$CSPROJ_FILE"
             <PropertyGroup>
               <PackageReadmeFile>README.md</PackageReadmeFile>
