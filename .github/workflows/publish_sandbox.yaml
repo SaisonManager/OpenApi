@@ -107,41 +107,56 @@ jobs:
 
       - name: Stitch and Attach C# README to NuGet Package
         run: |
-          # 1. Find the main .csproj file
+          # 1. Path variables
+          DOCS_DIR="./generated/csharp/docs/apis"
+          ROOT_README="./generated/csharp/README.md"
+          # Find the .csproj
           CSPROJ_FILE=$(find ./generated/csharp/src -name "*.csproj" | grep -v "Test" | head -n 1)
-          CSPROJ_DIR=$(dirname "$CSPROJ_FILE")
+          PROJECT_DIR=$(dirname "$CSPROJ_FILE")
+          PROJECT_README="$PROJECT_DIR/README.md"
           
-          # 2. Reset the README and add a header
-          echo "# SaisonManager API Client (C#)" > "$CSPROJ_DIR/README.md"
-          echo -e "\nThis library was automatically generated using the [OpenAPI Generator](https://openapi-generator.tech).\n" >> "$CSPROJ_DIR/README.md"
+          # 2. Extract content from SaisonManagerApi.md
+          # Search for any file ending in Api.md in the apis folder
+          API_MD=$(ls $DOCS_DIR/*Api.md | head -n 1)
           
-          # 3. Concatenate API Documentation (found in docs/apis/)
-          echo -e "\n## API Endpoints\n" >> "$CSPROJ_DIR/README.md"
-          for f in ./generated/csharp/docs/apis/*.md; do
-            if [ -f "$f" ]; then
-              # Inject section header for easier linking
-              echo -e "\n### $(basename "$f" .md)\n" >> "$CSPROJ_DIR/README.md"
-              # Inject file content and fix recursive references back to the file itself or parent README
-              sed -e 's/SaisonManagerApi\.md//g' -e 's/\.\.\/\.\.\/README\.md//g' "$f" >> "$CSPROJ_DIR/README.md"
-              echo -e "\n---\n" >> "$CSPROJ_DIR/README.md"
+          if [ -f "$API_MD" ]; then
+            echo "Found API documentation at $API_MD"
+            
+            # Start a fresh README with a nice header
+            echo "# SaisonManager API Client (C#)" > temp_readme.md
+            echo -e "\nThis library was automatically generated using the [OpenAPI Generator](https://openapi-generator.tech).\n" >> temp_readme.md
+            
+            # Append the main API documentation
+            cat "$API_MD" >> temp_readme.md
+            
+            # Optionally append Models if they exist
+            if [ -d "./generated/csharp/docs/models" ]; then
+              echo -e "\n## Models\n" >> temp_readme.md
+              for f in ./generated/csharp/docs/models/*.md; do
+                if [ -f "$f" ]; then
+                  echo -e "\n### $(basename "$f" .md)\n" >> temp_readme.md
+                  cat "$f" >> temp_readme.md
+                fi
+              done
             fi
-          done
 
-          # 4. Concatenate Model Documentation (found in docs/models/)
-          echo -e "\n## Models\n" >> "$CSPROJ_DIR/README.md"
-          for f in ./generated/csharp/docs/models/*.md; do
-            if [ -f "$f" ]; then
-              # Inject section header for easier linking
-              echo -e "\n### $(basename "$f" .md)\n" >> "$CSPROJ_DIR/README.md"
-              # Inject file content and fix cross-references/README links
-              # Transforms [Text](Model.md) into [Text](#model)
-              sed -e 's/(\([^)]*\)\.md)/(\L#\1)/g' -e 's/\.\.\/\.\.\/README\.md//g' "$f" >> "$CSPROJ_DIR/README.md"
-              echo -e "\n---\n" >> "$CSPROJ_DIR/README.md"
-            fi
-          done
+            # Clean up links: [Text](Model.md) -> [Text](#model), and remove self-references
+            sed -i 's/SaisonManagerApi\.md//g' temp_readme.md
+            sed -i 's/\.\.\/\.\.\/README\.md//g' temp_readme.md
+            sed -i 's/(\([^)]*\)\.md)/(\L#\1)/g' temp_readme.md
+            
+            # Overwrite BOTH root and project readmes to be absolutely sure NuGet finds it
+            cp temp_readme.md "$ROOT_README"
+            cp temp_readme.md "$PROJECT_README"
+          else
+            echo "Error: API documentation not found at $DOCS_DIR"
+            exit 1
+          fi
           
-          # 5. Safely inject the README mapping into the .csproj
-          # We remove any existing entries first to avoid duplicates
+          # 3. Update .csproj Description and README mapping
+          sed -i "/<Description>/c\    <Description>C# Client Library for SaisonManager API (Generated from OpenAPI)</Description>" "$CSPROJ_FILE"
+          
+          # Safely inject the README mapping
           sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
           sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
           sed -i 's/<\/Project>//g' "$CSPROJ_FILE"
