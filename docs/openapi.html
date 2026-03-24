@@ -1,21 +1,195 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>SaisonManager API v2 Reference (SmApiMirror)</title>
+<head>
     <meta charset="utf-8" />
+    <title>API Reference | SaisonManager</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-      body { margin: 0; }
+        :root {
+            --bg: #0a0a0a;
+            --header-bg: #171717;
+            --border: #262626;
+            --text-main: #f5f5f5;
+            --text-muted: #737373;
+            --primary: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { font-size: 16px !important; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        .header {
+            background-color: var(--header-bg);
+            color: white;
+            height: 64px !important;
+            min-height: 64px !important;
+            flex-shrink: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            width: 100%;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .header-brand svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary);
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .header-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: color 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-nav a:hover {
+            color: var(--text-main);
+        }
+
+        .header-nav a.active {
+            color: var(--text-main);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 4px;
+        }
+
+        #api-reference {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* Root-level Scalar Overrides - FORCING ALL BLUE TO RED */
+        :root, body, .scalar-app, [data-v-app], * {
+            --scalar-color-blue: #ef4444 !important;
+            --scalar-color-green: #ef4444 !important;
+            --scalar-color-orange: #f59e0b !important;
+            --scalar-color-red: #b91c1c !important;
+            --scalar-color-purple: #e17b7b !important;
+            
+            /* High-level aliases */
+            --scalar-color-accent: #ef4444 !important;
+            --scalar-primary: #ef4444 !important;
+        }
+
+        .scalar-app {
+            /* Standard Scalar Overrides */
+            --scalar-background-1: #0a0a0a !important;
+            --scalar-background-2: #171717 !important;
+            --scalar-background-3: #262626 !important;
+            --scalar-background-accent: rgba(239, 68, 68, 0.1) !important;
+            --scalar-color-1: #f5f5f5 !important;
+            --scalar-color-2: #a3a3a3 !important;
+            --scalar-color-3: #737373 !important;
+            --scalar-button-1: #ef4444 !important;
+            --scalar-button-1-hover: #dc2626 !important;
+            --scalar-button-1-color: #ffffff !important;
+            --scalar-border-color: #262626 !important;
+            
+            /* Method Overrides */
+            --scalar-color-get: #ef4444 !important;
+            --scalar-color-post: #ef4444 !important;
+            --scalar-color-put: #f59e0b !important;
+            --scalar-color-delete: #b91c1c !important;
+            --scalar-color-patch: #ef4444 !important;
+        }
+
+        /* Syntax Highlighting Overrides - Red-ish Muted */
+        .scalar-app .hljs-keyword,
+        .scalar-app .hljs-attr,
+        .scalar-app .hljs-selector-tag,
+        .scalar-app .hljs-name { color: #e17b7b !important; }
+        .scalar-app .hljs-regexp,
+        .scalar-app .hljs-string,
+        .scalar-app .hljs-built_in,
+        .scalar-app .hljs-title,
+        .scalar-app .hljs-section { color: #f5f5f5 !important; }
+        .scalar-app .hljs-number,
+        .scalar-app .hljs-literal { color: #fca5a5 !important; }
+        .scalar-app .hljs-comment { color: #737373 !important; }
+
+        @media (max-width: 768px) {
+            .header-nav { display: none; }
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="header-brand">
+                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                SaisonManager API
+            </a>
+            <nav class="header-nav">
+                <a href="openapi.html" class="active">API Spec</a>
+                <a href="sdk.html?sdk=csharp">SDKs</a>
+                <a href="https://github.com/SaisonManager/OpenApi" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://saisonmanager.de" target="_blank" rel="noopener">SaisonManager &nearr;</a>
+            </nav>
+        </div>
+    </header>
+
     <script
-      id="api-reference"
-      data-url="https://raw.githubusercontent.com/SaisonManager/OpenApi/refs/heads/main/openapi.json"
-      data-configuration='{
-        "showSidebar": true,
-        "layout": "modern"
-      }'
-      src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
-  </body>
+        id="api-reference"
+        data-url="https://raw.githubusercontent.com/SaisonManager/OpenApi/refs/heads/main/openapi.json"
+        data-configuration='{
+            "showSidebar": true,
+            "theme": "none",
+            "hideDownloadButton": true,
+            "darkMode": true,
+            "forceDarkModeState": "dark",
+            "customCss": "* { --scalar-color-blue: #ef4444 !important; --scalar-color-green: #ef4444 !important; --scalar-color-get: #ef4444 !important; --scalar-color-accent: #ef4444 !important; --scalar-primary: #ef4444 !important; --scalar-background-1: #0a0a0a !important; } .hljs-string, .hljs-regexp, .hljs-built_in { color: #f5f5f5 !important; } .hljs-keyword, .hljs-attr { color: #e17b7b !important; }"
+        }'
+        src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+</body>
 </html>

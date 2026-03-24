@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>SaisonManager API v2 Documentation Portal</title>
+    <title>SaisonManager API | Dokumentation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --bg: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg: #0a0a0a;
+            --header-bg: #171717;
+            --card-bg: #171717;
+            --card-hover: #262626;
+            --border: #262626;
+            --text-main: #f5f5f5;
+            --text-muted: #737373;
+            --primary: #ef4444;
+            --primary-dark: #dc2626;
         }
 
         * {
@@ -25,194 +26,258 @@
             padding: 0;
         }
 
+        /* Fixed base for rem consistency */
+        html { font-size: 16px !important; }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
-            color: var(--text);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.6;
-            overflow-x: hidden;
+            line-height: 1.5;
         }
 
-        h1, h2 {
+        .header {
+            background-color: var(--header-bg);
+            color: white;
+            height: 64px !important;
+            min-height: 64px !important;
+            flex-shrink: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-brand {
             font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .header-brand svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary);
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .header-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: color 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-nav a:hover {
+            color: var(--text-main);
+        }
+
+        .header-nav a.active {
+            color: var(--text-main);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 4px;
         }
 
         .container {
             max-width: 1000px;
-            width: 90%;
-            padding: 2rem;
-            text-align: center;
-            animation: fadeIn 0.8s ease-out;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            width: 100%;
+            flex-grow: 1;
         }
 
-        .header {
+        .hero {
             margin-bottom: 4rem;
         }
 
-        .header h1 {
-            font-size: 3.5rem;
+        .hero h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.25rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
+            color: var(--text-main);
         }
 
-        .header p {
-            font-size: 1.25rem;
+        .hero p {
+            font-size: 1.125rem;
             color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 800px;
         }
 
-        .grid {
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            display: block;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            width: 100%;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
         }
 
         .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2.5rem;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 2rem;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
+            gap: 1rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
         }
 
         .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: rgba(99, 102, 241, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+            background-color: var(--card-hover);
+            transform: translateY(-2px);
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
+        .card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
         .card p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
 
-        .card .btn {
+        .card-action {
             margin-top: auto;
+            font-size: 0.875rem;
+            font-weight: 700;
             color: var(--primary);
-            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: gap 0.2s;
         }
 
-        .card:hover .btn {
-            gap: 0.75rem;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .card-featured {
+            grid-column: 1 / -1;
+            border-left: 4px solid var(--primary);
         }
 
         .footer {
-            margin-top: 5rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+            background: var(--header-bg);
         }
 
-        /* SVG Icons */
-        .icon { width: 24px; height: 24px; fill: currentColor; }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .header-nav { display: none; }
+            .hero h2 { font-size: 1.75rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>Documentation</h1>
-            <p>Everything you need to integrate with the SaisonManager API v2 across different platforms.</p>
-        </header>
-
-        <main class="grid">
-            <a href="openapi.html" class="card">
-                <div class="card-icon">
-                    <svg viewBox="0 0 24 24" class="icon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                </div>
-                <h2>Interactive Reference</h2>
-                <p>Explore every endpoint, parameter, and response model in our live interactive playground powered by Scalar.</p>
-                <div class="btn">Explore API Reference <span>&rarr;</span></div>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="header-brand">
+                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                SaisonManager API
             </a>
+            <nav class="header-nav">
+                <a href="openapi.html">API Spec</a>
+                <a href="sdk.html?sdk=csharp">SDKs</a>
+                <a href="https://github.com/SaisonManager/OpenApi" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://saisonmanager.de" target="_blank" rel="noopener">SaisonManager &nearr;</a>
+            </nav>
+        </div>
+    </header>
 
+    <div class="container">
+        <div class="hero">
+            <h2>Dokumentations-Portal</h2>
+            <p>Technische Referenzen und Schnittstellenbeschreibungen für den Zugriff auf Floorball-Daten des Saisonmanagers. Dieses Portal dient als zentrale Anlaufstelle für die Integration der v2 API.</p>
+        </div>
+
+        <span class="section-label">Referenz</span>
+        <div class="card-grid">
+            <a href="openapi.html" class="card card-featured">
+                <h3>OpenAPI Spezifikation</h3>
+                <p>Interaktive API-Referenz basierend auf Scalar. Erlaubt das Testen von Endpunkten, das Einsehen von Schemata und die Generierung von Code-Snippets in Echtzeit.</p>
+                <div class="card-action">Spezifikation öffnen &rarr;</div>
+            </a>
+        </div>
+
+        <span class="section-label">Client Libraries</span>
+        <div class="card-grid">
             <a href="sdk.html?sdk=csharp" class="card">
-                <div class="card-icon">
-                    <svg viewBox="0 0 24 24" class="icon"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19c1.55 0 2.99-.41 4.23-1.14l4.28 4.28 1.41-1.41-4.28-4.28A8.441 8.441 0 0020 10.5C20 5.81 16.19 2 11.5 2zm0 15c-3.59 0-6.5-2.91-6.5-6.5S7.91 4 11.5 4 18 6.91 18 10.5 15.09 17 11.5 17z"/><path d="M10 7v3H7v2h3v3h2v-3h3v-2h-3V7h-2z"/></svg>
-                </div>
-                <h2>C# SDK / NuGet</h2>
-                <p>Official C# client for .NET developers. View installation guides, code snippets, and model documentation.</p>
-                <div class="btn">C# Documentation <span>&rarr;</span></div>
+                <h3>C# / .NET SDK</h3>
+                <p>Umfassende Library für .NET Anwendungen. Enthält typsichere Modelle und asynchrone Provider für alle SaisonManager-Entitäten.</p>
+                <div class="card-action">Dokumentation &rarr;</div>
             </a>
 
             <a href="sdk.html?sdk=typescript" class="card">
-                <div class="card-icon">
-                    <svg viewBox="0 0 24 24" class="icon"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5.92 14.07c-.42.35-.85.65-1.32.88-.47.23-1 .35-1.6.35-.6 0-1.07-.12-1.42-.35a1.86 1.86 0 01-.7-.95l-1.6.6a3.63 3.63 0 001.35 1.77c.65.5 1.4.73 2.37.73 1.1 0 2.02-.3 2.75-.9.72-.6 1.08-1.5 1.08-2.7 0-1.05-.33-1.85-1.03-2.45-.65-.6-1.58-.98-2.75-1.15-1.05-.15-1.78-.4-2.18-.7-.42-.33-.62-.75-.62-1.28 0-.43.18-.8.55-1.1.37-.3 1.05-.45 1.55-.45.55 0 1.05.12 1.48.38.43.25.75.65.98 1.18l1.6-.68c-.28-.7-.78-1.22-1.45-1.58s-1.48-.55-2.4-.55c-1.02 0-1.88.25-2.55.78-.7.52-1.05 1.25-1.05 2.18 0 .82.3 1.48.88 2 .6.53 1.4.88 2.45 1.05 1.15.2 2 .5 2.5.85.5.35.75.85.75 1.5 0 .65-.25 1.18-.75 1.58zM19 16.3V14h-1.5V9.45c1.1 0 1.62-.05 1.62-.05V16.3h-1.62z"/></svg>
-                </div>
-                <h2>TypeScript SDK / NPM</h2>
-                <p>Fully typed TypeScript fetch client for web applications and backend JS services.</p>
-                <div class="btn">JS/TS Documentation <span>&rarr;</span></div>
+                <h3>TypeScript SDK</h3>
+                <p>Moderner API-Client für Web- und Node.js-Umgebungen. Vollständige Type-Sicherheit für Ligen, Spiele und Statistiken.</p>
+                <div class="card-action">Dokumentation &rarr;</div>
             </a>
-        </main>
 
-        <footer class="footer">
-            <p>&copy; 2026 Floorball.Fan - SaisonManager OpenApi Projects</p>
-        </footer>
+            <div class="card" style="opacity: 0.5; cursor: default;">
+                <h3>Python Library</h3>
+                <p>In Entwicklung. Geplantes SDK für Datenanalyse-Workflows und automatisierte Reporting-Systeme.</p>
+                <div class="card-action" style="color: var(--text-muted);">Coming Soon</div>
+            </div>
+        </div>
     </div>
+
+    <footer class="footer">
+        &copy; 2026 <a href="https://floorball.fan">Floorball.Fan</a> &bull; Inoffizielle Dokumentation für SaisonManager Daten &bull; <a href="https://github.com/SaisonManager/OpenApi">GitHub</a>
+    </footer>
 </body>
 </html>

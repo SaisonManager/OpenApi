@@ -1,65 +1,37 @@
-# SaisonManager API v2 - Clients & OpenAPI Spec 🏑
+# SaisonManager API v2 - Clients & OpenAPI 🏑
 
-Dieses Repository enthält eine inoffizielle [OpenAPI-Spezifikation](openapi.json) für die **SaisonManager API (v2)**, die primär für Floorball-Spieldaten genutzt wird. 
+Dieses Repository bietet eine inoffizielle [OpenAPI-Spezifikation](openapi.json) und automatisch generierte, typisierte Clients für die **SaisonManager API (v2)**.
 
-Da die externe API v2 wertvolle, aber abgeschlossene Saisondaten liefert, sichert dieses Projekt den nahtlosen und typisierten Zugriff auf diese Daten, selbst wenn das Backend in Zukunft auf neuere Versionen aktualisiert wird.
-
-Aus der OpenAPI-Spezifikation werden automatisch einsatzbereite API-Clients für **C# (.NET)** und **TypeScript** generiert und über GitHub Packages bereitgestellt.
-
-🌐 **Zur interaktiven API-Dokumentation (Swagger UI):** [sm-openapi.floorball.fan](https://sm-openapi.floorball.fan/)
+## 🌐 Dokumentations-Portal
+Die vollständige Dokumentation inklusive interaktiver API-Referenz und SDK-Guides findest du hier:
+👉 **[sm-openapi.floorball.fan](https://sm-openapi.floorball.fan/)**
 
 ---
 
 ## 📦 Verfügbare Pakete
 
-Die generierten Pakete werden bei jedem Push in den `main`-Branch automatisch gebaut und in der GitHub Package Registry veröffentlicht. In den jeweiligen Paketen auf GitHub findest du zudem spezifische Code-Beispiele zur Nutzung.
+Alle Pakete werden automatisch bei jedem Push in den `main`-Branch aktualisiert und in der **GitHub Package Registry** veröffentlicht.
 
-### TypeScript / Node.js
-**Paketname:** `@saisonmanager/saisonmanager-api-v2`
+### [C# / .NET SDK](https://sm-openapi.floorball.fan/sdk.html?sdk=csharp)
+- **NuGet-Name:** `SaisonManager.Api.V2`
+- **Installation:** [Guide & Beispiele ansehen](https://sm-openapi.floorball.fan/sdk.html?sdk=csharp)
 
-**Installation:**
-Um Pakete aus der GitHub Registry zu installieren, musst du zunächst sicherstellen, dass deine `.npmrc` Datei auf den GitHub-Scope zeigt:
-
-```bash
-echo "@saisonmanager:registry=[https://npm.pkg.github.com](https://npm.pkg.github.com)" >> .npmrc
-```
-
-Anschließend kannst du das Paket ganz normal installieren:
-
-```bash
-npm install @saisonmanager/saisonmanager-api-v2
-```
-
-### C# / .NET
-**Paketname:** `SaisonManager.Api.V2`
-
-**Installation:**
-Füge die GitHub NuGet Registry als Paketquelle (Source) in deiner `nuget.config` oder per Kommandozeile hinzu:
-
-```bash
-dotnet nuget add source "[https://nuget.pkg.github.com/SaisonManager/index.json](https://nuget.pkg.github.com/SaisonManager/index.json)" --name "GitHub" --username "DEIN_GITHUB_NAME" --password "DEIN_GITHUB_PAT"
-```
-
-Installiere dann das Paket:
-
-```bash
-dotnet add package SaisonManager.Api.V2
-```
+### [TypeScript / NPM SDK](https://sm-openapi.floorball.fan/sdk.html?sdk=typescript)
+- **NPM-Name:** `@saisonmanager/saisonmanager-api-v2`
+- **Installation:** [Guide & Beispiele ansehen](https://sm-openapi.floorball.fan/sdk.html?sdk=typescript)
 
 ---
 
-## 🔑 Authentifizierung (GitHub Packages)
-Da die Pakete in der GitHub Registry gehostet werden, benötigst du (oder andere Entwickler) ein **Personal Access Token (PAT)** mit der Berechtigung `read:packages`, um sie herunterladen zu können. 
-
-* [Anleitung: GitHub PAT erstellen](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-
-## 🛠️ Lokale Entwicklung & Generierung
-Wenn du die `openapi.json` anpasst und die Clients lokal generieren möchtest, kannst du das CLI-Tool von OpenAPI Generator nutzen:
+## 🛠️ Lokale Entwicklung
+Um die Clients lokal zu generieren, nutze den OpenAPI Generator:
 
 ```bash
-# TypeScript generieren
+# TypeScript
 npx @openapitools/openapi-generator-cli generate -i openapi.json -g typescript-fetch -o ./generated/typescript
 
-# C# generieren
+# C#
 npx @openapitools/openapi-generator-cli generate -i openapi.json -g csharp -o ./generated/csharp
 ```
+
+---
+&copy; 2026 Floorball.Fan
