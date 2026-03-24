@@ -14,7 +14,7 @@ jobs:
   sandbox-publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write 
     
     steps:
@@ -88,33 +88,54 @@ jobs:
       - name: Process and Attach READMEs
         run: |
           # Find the generated API doc (fails safely if missing)
-          API_MD=$(find ./generated/csharp -name "*Api.md" | head -n 1)
-          if [ -z "$API_MD" ]; then echo "Error: API documentation not found."; exit 1; fi
+          API_MD_CS=$(find ./generated/csharp -name "*Api.md" | head -n 1)
+          API_MD_TS=$(find ./generated/typescript -name "*Api.md" | head -n 1)
+          
+          if [ -z "$API_MD_CS" ]; then echo "Error: C# API documentation not found."; exit 1; fi
 
-          # 1. Build a clean README starting with the API info
-          echo "# ${{ env.NUGET_PACKAGE_NAME }}" > temp_readme.md
-          echo -e "\nOfficial Client for the SaisonManager API.\n" >> temp_readme.md
-          cat "$API_MD" >> temp_readme.md
+          # 1. Build C# README
+          echo "# ${{ env.NUGET_PACKAGE_NAME }}" > csharp_readme.md
+          echo -e "\nOfficial Client for the SaisonManager API.\n" >> csharp_readme.md
+          cat "$API_MD_CS" >> csharp_readme.md
 
-          # 2. Link Correction Logic
-          # Remove self-references
-          sed -i 's/[a-zA-Z0-9]*Api\.md#/#/g' temp_readme.md
-          # Convert [Model](Model.md) to [Model](#model) (supports hyphens/underscores)
-          sed -i -E 's/\[([^]]+)\]\(([a-zA-Z0-9_.-]+)\.md\)/[\1](#\L\2)/g' temp_readme.md
-          # Remove broken relative "Back to..." links
-          sed -i 's|\[\[Back to README\]\](\.\.\/\.\.\/README\.md)||g' temp_readme.md
-          sed -i 's|\[\[Back to API list\]\](\.\.\/\.\.\/README\.md#documentation-for-api-endpoints)||g' temp_readme.md
-          sed -i 's|\[\[Back to Model list\]\](\.\.\/\.\.\/README\.md#documentation-for-models)||g' temp_readme.md
+          # 2. Build TypeScript README (Use its own API MD if available, else fallback to C#)
+          echo "# ${{ env.NPM_PACKAGE_NAME }}" > ts_readme.md
+          echo -e "\nOfficial Client for the SaisonManager API.\n" >> ts_readme.md
+          if [ -n "$API_MD_TS" ]; then
+            cat "$API_MD_TS" >> ts_readme.md
+          else
+            cat "$API_MD_CS" >> ts_readme.md
+          fi
 
-          # 3. Distribute to Project Folders
+          # 3. Link Correction Function
+          fix_links() {
+            local file=$1
+            # Remove self-references
+            sed -i 's/[a-zA-Z0-9]*Api\.md#/#/g' "$file"
+            # Convert [Model](Model.md) to [Model](#model)
+            sed -i -E 's/\[([^]]+)\]\(([a-zA-Z0-9_.-]+)\.md\)/[\1](#\L\2)/g' "$file"
+            # Remove broken relative "Back to..." links
+            sed -i 's|\[\[Back to README\]\](\.\.\/\.\.\/README\.md)||g' "$file"
+            sed -i 's|\[\[Back to API list\]\](\.\.\/\.\.\/README\.md#documentation-for-api-endpoints)||g' "$file"
+            sed -i 's|\[\[Back to Model list\]\](\.\.\/\.\.\/README\.md#documentation-for-models)||g' "$file"
+          }
+
+          fix_links csharp_readme.md
+          fix_links ts_readme.md
+
+          # 4. Distribute to Project Folders
           CSPROJ_FILE=$(find ./generated/csharp -name "*.csproj" | grep -v "Test" | head -n 1)
           PROJECT_DIR=$(dirname "$CSPROJ_FILE")
           
-          cp temp_readme.md "$PROJECT_DIR/README.md"
-          cp temp_readme.md "./generated/csharp/README.md"
-          cp temp_readme.md "./generated/typescript/README.md"
+          cp csharp_readme.md "$PROJECT_DIR/README.md"
+          cp csharp_readme.md "./generated/csharp/README.md"
+          cp ts_readme.md "./generated/typescript/README.md"
+          
+          # 5. Copy to Docs folder for GitHub Pages
+          cp csharp_readme.md ./docs/csharp.md
+          cp ts_readme.md ./docs/typescript.md
 
-          # 4. Safely Inject into .csproj without breaking XML
+          # 6. Safely Inject into .csproj without breaking XML
           sed -i '/<PackageReadmeFile>/d' "$CSPROJ_FILE"
           sed -i '/<None Include="README.md"/d' "$CSPROJ_FILE"
           
@@ -161,3 +182,17 @@ jobs:
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ==========================================
+      # 6. COMMIT DOCS UPDATES
+      # ==========================================
+      - name: Commit and Push Documentation
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          # Use --allow-empty in case no changes occurred
+          git commit -m "docs: update sdk documentation [skip ci]" || echo "No changes to commit"
+          # Ensure we are on the main branch before pushing
+          git checkout -B main
+          git push origin main
