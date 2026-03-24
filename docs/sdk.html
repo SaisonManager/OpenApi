@@ -156,7 +156,8 @@
             </a>
             <nav class="header-nav">
                 <a href="openapi.html">API Spec</a>
-                <a href="sdk.html?sdk=csharp" class="active">SDKs</a>
+                <a href="sdk.html?sdk=csharp" id="nav-csharp">C#</a>
+                <a href="sdk.html?sdk=typescript" id="nav-typescript">TypeScript</a>
                 <a href="https://github.com/SaisonManager/OpenApi" target="_blank" rel="noopener">GitHub</a>
                 <a href="https://saisonmanager.de" target="_blank" rel="noopener">SaisonManager &nearr;</a>
             </nav>
@@ -217,9 +218,11 @@
         if (sdk === 'csharp') {
             viewer.src = 'csharp.md';
             document.title = 'C# SDK | SaisonManager';
+            document.getElementById('nav-csharp').classList.add('active');
         } else if (sdk === 'typescript') {
             viewer.src = 'typescript.md';
             document.title = 'TypeScript SDK | SaisonManager';
+            document.getElementById('nav-typescript').classList.add('active');
         } else {
             viewer.style.display = 'none';
             errorMsg.style.display = 'block';
