@@ -2,22 +2,19 @@
   "x-generator": "NSwag v14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
-    "title": "SaisonManager API v2",
+    "title": "SaisonManager v2 API",
     "version": "2.0.0"
   },
   "servers": [
     {
-      "url": "https://saisonmanager.de"
+      "url": "http://saisonmanager.de"
     }
   ],
   "paths": {
     "/api/v2/init.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
-        "summary": "Initiale SM v2 Metadaten abrufen",
+        "tags": ["SaisonManagerV2"],
+        "summary": "SM v2 Metadaten der aktuellen Saison",
         "description": "Ruft den init.json Endpunkt von SaisonManager v2 ab, um Metadaten und Initialisierungsinformationen zu erhalten.",
         "operationId": "SmInitRequest",
         "responses": {
@@ -36,11 +33,8 @@
     },
     "/api/v2/games.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
-        "summary": "Alle Spiele abrufen",
+        "tags": ["SaisonManagerV2"],
+        "summary": "Alle Spiele",
         "description": "Ruft den games.json Endpunkt von SaisonManager v2 ab und liefert alle Spiele zurück.",
         "operationId": "SmAllGamesRequest",
         "responses": {
@@ -59,11 +53,8 @@
     },
     "/api/v2/leagues.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
-        "summary": "Alle Ligen abrufen",
+        "tags": ["SaisonManagerV2"],
+        "summary": "Alle Ligen",
         "description": "Ruft den leagues.json Endpunkt von SaisonManager v2 ab und liefert alle Ligen zurück.",
         "operationId": "SmAllLeaguesRequest",
         "responses": {
@@ -80,27 +71,27 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}.json": {
+    "/api/v2/leagues/{LeagueId}.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga",
+        "description": "Ruft den leagues/{LeagueId}.json Endpunkt von SaisonManager v2 ab und liefert Liga-Details für eine spezifische Liga.",
         "operationId": "SmLeagueRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Liga erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -110,7 +101,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige LeagueId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -122,27 +113,27 @@
         }
       }
     },
-    "/api/v2/games/{gameId}.json": {
+    "/api/v2/games/{GameId}.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Spiel",
+        "description": "Ruft den games/{GameId}.json Endpunkt von SaisonManager v2 ab und liefert Spiel-Details zurück.",
         "operationId": "SmGameRequest",
         "parameters": [
           {
-            "name": "gameId",
+            "name": "GameId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 1234
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Spiel erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -152,7 +143,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige GameId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -164,27 +155,27 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/schedule.json": {
+    "/api/v2/leagues/{LeagueId}/schedule.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga-Spielplan",
+        "description": "Ruft den leagues/{LeagueId}/schedule.json Endpunkt von SaisonManager v2 ab und liefert den Spielplan für eine Liga.",
         "operationId": "SmLeagueScheduleRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Liga-Spielplan erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -194,7 +185,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige LeagueId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -206,27 +197,27 @@
         }
       }
     },
-    "/api/v2/game_operations/{gameOperationId}.json": {
+    "/api/v2/game_operations/{GameOperationId}.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Verbands-Ligen",
+        "description": "Ruft den game_operations/{GameOperationId}.json Endpunkt von SaisonManager v2 ab und liefert die zugehörigen Ligen.",
         "operationId": "SmGameOperationLeaguesRequest",
         "parameters": [
           {
-            "name": "gameOperationId",
+            "name": "GameOperationId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 1
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Ligen zur Spieloperation erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -236,7 +227,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige GameOperationId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -250,11 +241,8 @@
     },
     "/api/v2/penalty_codes.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
-        "summary": "Strafcodes abrufen",
+        "tags": ["SaisonManagerV2"],
+        "summary": "Strafcodes",
         "description": "Ruft den penalty_codes.json Endpunkt von SaisonManager v2 ab und liefert alle Strafcodes.",
         "operationId": "SmPenaltyCodesRequest",
         "responses": {
@@ -273,11 +261,8 @@
     },
     "/api/v2/penalties.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
-        "summary": "Strafen abrufen",
+        "tags": ["SaisonManagerV2"],
+        "summary": "Strafen",
         "description": "Ruft den penalties.json Endpunkt von SaisonManager v2 ab und liefert alle Strafen.",
         "operationId": "SmPenaltiesRequest",
         "responses": {
@@ -294,27 +279,27 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/table.json": {
+    "/api/v2/leagues/{LeagueId}/table.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga-Tabelle",
+        "description": "Ruft den leagues/{LeagueId}/table.json Endpunkt von SaisonManager v2 ab und liefert die Tabellenwerte.",
         "operationId": "SmLeagueTableRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Tabelle erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -324,7 +309,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige LeagueId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -336,27 +321,27 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/grouped_table.json": {
+    "/api/v2/leagues/{LeagueId}/grouped_table.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga-Gruppentabelle",
+        "description": "Ruft den leagues/{LeagueId}/grouped_table.json Endpunkt von SaisonManager v2 ab und liefert gruppierte Tabellendaten.",
         "operationId": "SmLeagueGroupedTableRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Gruppierte Tabelle erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -366,7 +351,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige LeagueId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -378,27 +363,27 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/scorer.json": {
+    "/api/v2/leagues/{LeagueId}/scorer.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga-Scorer-Tabelle",
+        "description": "Ruft den leagues/{LeagueId}/scorer.json Endpunkt von SaisonManager v2 ab und liefert die Scorer-Liste.",
         "operationId": "SmLeagueScorerRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Torschützenliste erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -408,7 +393,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige LeagueId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -420,27 +405,27 @@
         }
       }
     },
-    "/api/v2/admin/leagues/{leagueId}/additional_references.json": {
+    "/api/v2/admin/leagues/{LeagueId}/additional_references.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga-Informationen",
+        "description": "Ruft den admin/leagues/{LeagueId}/additional_references.json Endpunkt von SaisonManager v2 ab und liefert Zusatzdaten.",
         "operationId": "SmLeagueAdditionalReferencesRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Zusätzliche Referenzen erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
@@ -450,7 +435,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige LeagueId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -462,36 +447,37 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/game_days/{gameDayNumber}/schedule.json": {
+    "/api/v2/leagues/{LeagueId}/game_days/{GameDayNumber}/schedule.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga-Spielplan nach Spieltag",
+        "description": "Ruft den Spielplan für einen spezifisch ausgewählten Spieltag innerhalb einer Liga ab. Dieser Endpunkt spiegelt direkt den entsprechenden V2 SaisonManager-API-Endpunkt wider.",
         "operationId": "SmLeagueGameDayScheduleRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           },
           {
-            "name": "gameDayNumber",
+            "name": "GameDayNumber",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 1
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Der Spielplan für den Spieltag wurde erfolgreich abgerufen. Gibt ein strukturiertes JSON-Payload der Spiele zurück.",
             "content": {
               "application/json": {
                 "schema": {
@@ -501,7 +487,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültiges Anfrageformat oder fehlerhafte Parameter. Die Validierung ist fehlgeschlagen (z. B. negative LeagueId oder GameDayNumber).",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -513,37 +499,37 @@
         }
       }
     },
-    "/api/v2/leagues/{leagueId}/game_days/current/schedule.json": {
+    "/api/v2/leagues/{LeagueId}/game_days/current/schedule.json": {
       "get": {
-        "tags": [
-          "SaisonManagerV2",
-          "Api"
-        ],
+        "tags": ["SaisonManagerV2"],
+        "summary": "Liga-Spielplan nach aktuellen Spieltag",
+        "description": "Ruft den leagues/{LeagueId}/game_days/current/schedule.json Endpunkt von SaisonManager v2 ab und liefert den aktuellen Spieltag-Spielplan.",
         "operationId": "SmLeagueCurrentGameDayScheduleRequest",
         "parameters": [
           {
-            "name": "leagueId",
+            "name": "LeagueId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 123
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Aktueller Spieltag-Spielplan erfolgreich abgerufen.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SmLeagueGameDayScheduleResponse"
+                  "$ref": "#/components/schemas/SmLeagueCurrentGameDayScheduleResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Ungültige LeagueId",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -571,10 +557,12 @@
       },
       "SmV2Init": {
         "type": "object",
+        "description": "Beschreibung der Datenstruktur der aktuellen Saison.",
         "additionalProperties": false,
         "properties": {
           "seasons": {
             "type": "array",
+            "description": "Liste aller Saisons im SaisonManager.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -587,11 +575,13 @@
           },
           "current_season_id": {
             "type": "integer",
+            "description": "Die Id der zur Zeit laufenden Saison.\n(2024/2025 -> 16)\n(2025/2026 -> 17)",
             "format": "int32",
             "nullable": true
           },
           "game_operations": {
             "type": "array",
+            "description": "Beschreibung als XML Kommentar: Die Spieloperationen.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -606,54 +596,66 @@
       },
       "SmV2Season": {
         "type": "object",
+        "description": "Eine Saison.",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "integer",
+            "description": "Id der Saison.\nErste Saison 2009/2010 -> Id 1\nAktuelle Saison 2025/2026 -> Id 17",
             "format": "int32",
             "nullable": true
           },
           "name": {
             "type": "string",
+            "description": "Name der Saison, z.B. \"2024/2025\"",
             "nullable": true
           },
           "current": {
             "type": "boolean",
+            "description": "Gibt an, ob es sich um die aktuelle Saison handelt.\nAktuelle Saison 2025/2026 mit Id 17 -> true",
             "nullable": true
           }
         }
       },
       "SmV2GameOperation": {
         "type": "object",
+        "description": "Ein Spielbetrieb.",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "integer",
+            "description": "Id des Verbandes in der aktuellen Saison.\nAnmerkung: unklar, in wie weit sich Spielbetriebe ändern, ob diese IDs dauerhaft bestehen bleiben.",
             "format": "int32",
             "nullable": true
           },
           "name": {
             "type": "string",
+            "description": "Name des Verbandes.\nBeispiel: \"Floorball Deutschland\"",
             "nullable": true
           },
           "short_name": {
             "type": "string",
+            "description": "Kurzname des Verbandes.\nBeispiel: \"FVD\"",
             "nullable": true
           },
           "path": {
             "type": "string",
+            "description": "Slug des Verbandes.\nWird in URLs verwendet.",
             "nullable": true
           },
           "logo_url": {
             "type": "string",
+            "description": "Logo-URL des Verbandes.",
             "nullable": true
           },
           "logo_quad_url": {
             "type": "string",
+            "description": "Logo-URL des Verbandes im quadratischen Format.",
             "nullable": true
           },
           "top_leagues": {
             "type": "array",
+            "description": "Liste der Top-Ligen des Verbandes.\nAnmerkung: es sind keine Liga-Ids, sondern die gesamten Ligen als Liste..",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -827,14 +829,17 @@
           },
           "game_number": {
             "type": "string",
+            "description": "Spielnummer.\nTODO: können auch string zB bei Gruppenphase etc reinkommen? \"winner_a\" etc",
             "nullable": true
           },
           "start_time": {
             "type": "string",
+            "description": "Startzeit des Spiels.\nIm Format \"\"HH:MM\"\nBeispiel: \"19:30\"",
             "nullable": true
           },
           "audience": {
             "type": "integer",
+            "description": "Anzahl der Zuschauer.",
             "format": "int32",
             "nullable": true
           }
@@ -848,7 +853,13 @@
       },
       "SmV2LeaguePreview": {
         "type": "object",
+        "discriminator": {
+          "propertyName": "$type"
+        },
         "additionalProperties": false,
+        "required": [
+          "$type"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -883,6 +894,9 @@
           "link_schedule": {
             "type": "string",
             "nullable": true
+          },
+          "$type": {
+            "type": "string"
           }
         }
       },
@@ -956,33 +970,33 @@
         "description": "RFC7807 compatible problem details/ error response class. this can be used by configuring startup like so:\napp.UseFastEndpoints(c => c.Errors.UseProblemDetails())",
         "additionalProperties": false,
         "properties": {
-          "type": {
+          "Type": {
             "type": "string",
             "default": "https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1"
           },
-          "title": {
+          "Title": {
             "type": "string",
             "default": "One or more validation errors occurred."
           },
-          "status": {
+          "Status": {
             "type": "integer",
             "format": "int32",
             "default": 400
           },
-          "instance": {
+          "Instance": {
             "type": "string",
             "default": "/api/route"
           },
-          "traceId": {
+          "TraceId": {
             "type": "string",
             "default": "0HMPNHL0JHL76:00000001"
           },
-          "detail": {
+          "Detail": {
             "type": "string",
             "description": "the details of the error",
             "nullable": true
           },
-          "errors": {
+          "Errors": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ProblemDetails_Error"
@@ -995,22 +1009,22 @@
         "description": "the error details object",
         "additionalProperties": false,
         "properties": {
-          "name": {
+          "Name": {
             "type": "string",
             "description": "the name of the error or property of the dto that caused the error",
             "default": "Error or field name"
           },
-          "reason": {
+          "Reason": {
             "type": "string",
             "description": "the reason for the error",
             "default": "Error reason"
           },
-          "code": {
+          "Code": {
             "type": "string",
             "description": "the code of the error",
             "nullable": true
           },
-          "severity": {
+          "Severity": {
             "type": "string",
             "description": "the severity of the error",
             "nullable": true
@@ -1035,7 +1049,16 @@
           },
           {
             "type": "object",
+            "discriminator": {
+              "propertyName": "$type",
+              "mapping": {
+                "SmGameResponse": "#/components/schemas/SmGameResponse"
+              }
+            },
             "additionalProperties": false,
+            "required": [
+              "$type"
+            ],
             "properties": {
               "id": {
                 "type": "integer",
@@ -1043,6 +1066,7 @@
                 "nullable": true
               },
               "game_day": {
+                "description": "Anmerkung: in SmV2ScheduledGame ist es ein integer, hier ein struct.",
                 "nullable": true,
                 "oneOf": [
                   {
@@ -1052,49 +1076,60 @@
               },
               "game_number": {
                 "type": "string",
+                "description": "Anmerkung: in SmV2ScheduledGame ist es ein integer, hier ein string",
                 "nullable": true
               },
               "start_time": {
                 "type": "string",
+                "description": "Startzeit des Spiels.\nIm Format \"HH:MM\"\nBeispiel: \"19:30\"",
                 "nullable": true
               },
               "actual_start_time": {
                 "type": "string",
+                "description": "Tatsächliche Startzeit des Spiels.\nIm Format \"HH:MM\"\nBeispiel: \"19:30\"",
                 "nullable": true
               },
               "game_status": {
                 "type": "string",
+                "description": "Aktueller Status des Spiels.\nSiehe GameStatus",
                 "nullable": true
               },
               "ingame_status": {
                 "type": "string",
+                "description": "Ingame-Status\nSiehe IngameState",
                 "nullable": true
               },
               "audience": {
                 "type": "integer",
+                "description": "Anzahl der Zuschauer.",
                 "format": "int32",
                 "nullable": true
               },
               "home_team_id": {
                 "type": "integer",
+                "description": "Team-Id des Heimteams.",
                 "format": "int32",
                 "nullable": true
               },
               "guest_team_id": {
                 "type": "integer",
+                "description": "Team-Id des Gastteams.",
                 "format": "int32",
                 "nullable": true
               },
               "live_stream_link": {
                 "type": "string",
+                "description": "Link zum Live-Stream des Spiels.",
                 "nullable": true
               },
               "vod_link": {
                 "type": "string",
+                "description": "Link zum Video-on-Demand (VOD) des Spiels.",
                 "nullable": true
               },
               "events": {
                 "type": "array",
+                "description": "Liste der Ereignisse, die während des Spiels stattgefunden haben, wie Tore, Strafen, Timeouts usw.",
                 "nullable": true,
                 "items": {
                   "nullable": true,
@@ -1106,6 +1141,7 @@
                 }
               },
               "players": {
+                "description": "Liste der Spieler, die an diesem Spiel beteiligt waren, einschließlich ihrer Positionen, Auszeichnungen usw.",
                 "nullable": true,
                 "oneOf": [
                   {
@@ -1114,6 +1150,7 @@
                 ]
               },
               "starting_players": {
+                "description": "Liste der Startspieler für dieses Spiel.",
                 "nullable": true,
                 "oneOf": [
                   {
@@ -1122,6 +1159,7 @@
                 ]
               },
               "awards": {
+                "description": "Auszeichnungen, die vergeben wurden.",
                 "nullable": true,
                 "oneOf": [
                   {
@@ -1131,36 +1169,44 @@
               },
               "league_id": {
                 "type": "integer",
+                "description": "Liga-ID, in der das Spiel stattfindet.",
                 "format": "int32",
                 "nullable": true
               },
               "league_name": {
                 "type": "string",
+                "description": "Liga-Name, in der das Spiel stattfindet.",
                 "nullable": true
               },
               "league_short_name": {
                 "type": "string",
+                "description": "Kurzname der Liga, in der das Spiel stattfindet.",
                 "nullable": true
               },
               "game_operation_id": {
                 "type": "integer",
+                "description": "Verbands-ID, in dem das Spiel stattfindet.",
                 "format": "int32",
                 "nullable": true
               },
               "game_operation_name": {
                 "type": "string",
+                "description": "Name des Verbandes, in dem das Spiel stattfindet.",
                 "nullable": true
               },
               "game_operation_short_name": {
                 "type": "string",
+                "description": "Kurzname des Verbandes, in dem das Spiel stattfindet.",
                 "nullable": true
               },
               "game_operation_slug": {
                 "type": "string",
+                "description": "Slug des Verbandes, in dem das Spiel stattfindet. Wird in URLs verwendet.",
                 "nullable": true
               },
               "period_titles": {
                 "type": "array",
+                "description": "Bezeichnung des aktuellen Drittels.\nAnmerkung: in allen Spielen bisher ist dies immer \"1. Drittel\", \"2. Drittel\" oder \"3. Drittel\".",
                 "nullable": true,
                 "items": {
                   "nullable": true,
@@ -1173,11 +1219,16 @@
               },
               "nominated_referees": {
                 "type": "string",
+                "description": "Für dieses Spiel nominierte Schiedsrichter.\nAnmerkung: in SmV2ScheduledGame ist dieses Feld mit \"nominated_referee_string\" bezeichnet.",
                 "nullable": true
               },
               "deletable": {
                 "type": "boolean",
+                "description": "Ist dieses Spiel löschbar? (true/false)\nWird wahrscheinlich nur im SaisonManager intern verwendet.",
                 "nullable": true
+              },
+              "$type": {
+                "type": "string"
               }
             }
           }
@@ -1198,10 +1249,12 @@
           },
           "event_team": {
             "type": "string",
+            "description": "Das Team, das an diesem Ereignis beteiligt ist (\"home\" oder \"guest\").",
             "nullable": true
           },
           "period": {
             "type": "integer",
+            "description": "Die Spielperiode, in der das Ereignis stattgefunden hat.\nZum Beispiel: 1, 2, 3 für die regulären Spielperiod",
             "format": "int32",
             "nullable": true
           },
@@ -1217,6 +1270,7 @@
           },
           "time": {
             "type": "string",
+            "description": "Die Uhrzeit, zu der das Ereignis stattgefunden hat, im Format \"MM:SS\". Zum Beispiel \"12:34\" für 12 Minuten und 34 Sekunden.\nEs gibt allerdings viele Ausnamhen, da anfänglich die Zeit manuell eingetragen wurde, Beispiel: \"N.A.\", \"-.03\", \"14.$9\"\nSiehe SaisonManager_Notes.md für weitere Beispiele.",
             "nullable": true
           },
           "sortkey": {
@@ -1225,11 +1279,13 @@
           },
           "number": {
             "type": "integer",
+            "description": "Bei Tor oder Strafen-Event ist es die Trikot-Nummer des Torschützen.\nBei Eigentor ist es die 1000.\nBei Timeout nicht vorhanden.",
             "format": "int32",
             "nullable": true
           },
           "penalty_type": {
             "type": "string",
+            "description": "Siehe ",
             "nullable": true
           },
           "penalty_type_string": {
@@ -1262,10 +1318,12 @@
       },
       "SmV2Players": {
         "type": "object",
+        "description": "Spieler, die an einem Spiel beteiligt sind.",
         "additionalProperties": false,
         "properties": {
           "home": {
             "type": "array",
+            "description": "Liste von Spielern des Heimteams, die an diesem Spiel beteiligt sind.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -1278,6 +1336,7 @@
           },
           "guest": {
             "type": "array",
+            "description": "Liste von Spielern des Gastteams, die an diesem Spiel beteiligt sind.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -1297,18 +1356,22 @@
           },
           {
             "type": "object",
+            "description": "Ein Spieler, der am Spiel beteiligt ist.",
             "additionalProperties": false,
             "properties": {
               "captain": {
                 "type": "boolean",
+                "description": "Kaptän des Teams?",
                 "nullable": true
               },
               "goalkeeper": {
                 "type": "boolean",
+                "description": "Goalie?",
                 "nullable": true
               },
               "position": {
                 "type": "string",
+                "description": "Position des Spielers auf dem Feld.\nAnmerkung: bisher nur \"Feld\" und \"Tor\" bekannt, aber es könnte in Zukunft weitere Positionen geben.\nDie genaue Spielposition (zB Verteidiger, Stürmer) muss über zufällige Aufstellung in Stating-Player ermittelt werden.",
                 "nullable": true
               }
             }
@@ -1325,6 +1388,7 @@
             "SmV2TeamPlayer": "#/components/schemas/SmV2TeamPlayer"
           }
         },
+        "x-abstract": true,
         "additionalProperties": false,
         "required": [
           "$type"
@@ -1350,6 +1414,7 @@
           },
           "plaayer_name": {
             "type": "string",
+            "description": "Dummy-Feld\nIn Spiel #35372 'players.home' hat 'plaayer_name', daher dieses Dummy-Feld",
             "nullable": true
           },
           "$type": {
@@ -1364,14 +1429,17 @@
           },
           {
             "type": "object",
+            "description": "Ein Spieler, der während eines Spiels eine Auszeichnung erhalten hat.",
             "additionalProperties": false,
             "properties": {
               "award": {
                 "type": "string",
+                "description": "Die Auszeichnung, die der Spieler erhalten hat. Zum Beispiel \"mvp\" für Most Valuable Player.  \nBisher nur \"mvp\" bekannt, aber es könnte in Zukunft weitere Auszeichnungen geben (zB Fair Play).",
                 "nullable": true
               },
               "team": {
                 "type": "string",
+                "description": "Das Team, für das der Spieler spielt.",
                 "nullable": true
               }
             }
@@ -1385,14 +1453,17 @@
           },
           {
             "type": "object",
+            "description": "Starting-4 oder Starting-6.",
             "additionalProperties": false,
             "properties": {
               "position": {
                 "type": "string",
+                "description": "Position des Startspielers in der Aufstellung.\nAnmerkung: bisher nur \"defender1/2\", \"center\", \"forward1/2\" und \"goal\" bekannt, aber es könnte in Zukunft weitere Positionen geben.\nAnmerkung: bei Kleinfeld unbekannt",
                 "nullable": true
               },
               "team": {
                 "type": "string",
+                "description": "Team, für das der Startspieler spielt.\nAnmerkung: ggf. neu seit Februar 2025, aber nicht überprüft",
                 "nullable": true
               }
             }
@@ -1401,10 +1472,12 @@
       },
       "SmV2StartingPlayers": {
         "type": "object",
+        "description": "Startspieler für ein Spiel.",
         "additionalProperties": false,
         "properties": {
           "home": {
             "type": "array",
+            "description": "Liste von Startspielern des Heimteams für dieses Spiel.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -1417,6 +1490,7 @@
           },
           "guest": {
             "type": "array",
+            "description": "Liste von Startspielern des Gastteams für dieses Spiel.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -1431,10 +1505,12 @@
       },
       "SmV2Awards": {
         "type": "object",
+        "description": "Auszeichnungen, die während eines Spiels vergeben wurden.",
         "additionalProperties": false,
         "properties": {
           "home": {
             "type": "array",
+            "description": "Liste von Spielern des Heimteams, die während dieses Spiels eine Auszeichnung erhalten haben.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -1447,6 +1523,7 @@
           },
           "guest": {
             "type": "array",
+            "description": "Liste von Spielern des Gastteams, die während dieses Spiels eine Auszeichnung erhalten haben.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -1465,6 +1542,7 @@
         "properties": {
           "period": {
             "type": "number",
+            "description": "Spielperiode\nSiehe Period",
             "format": "decimal",
             "nullable": true
           },
@@ -1478,6 +1556,7 @@
           },
           "status_id": {
             "type": "string",
+            "description": "Ingame-Status\nSiehe IngameState",
             "nullable": true
           },
           "can_end_game": {
@@ -1496,10 +1575,22 @@
       },
       "SmV2BaseGame": {
         "type": "object",
+        "discriminator": {
+          "propertyName": "$type",
+          "mapping": {
+            "SmV2ScheduledGame": "#/components/schemas/SmV2ScheduledGame"
+          }
+        },
+        "description": "Beschreibung SmV2BaseGame.",
+        "x-abstract": true,
         "additionalProperties": false,
+        "required": [
+          "$type"
+        ],
         "properties": {
           "arena": {
             "type": "integer",
+            "description": "ArenaId",
             "format": "int32",
             "nullable": true
           },
@@ -1517,6 +1608,7 @@
           },
           "date": {
             "type": "string",
+            "description": "Datum, wann das Spiel stattfindet.  \nFormat: YYYY-MM-DD  \nBeispiel: \"2016-01-24\"",
             "nullable": true
           },
           "started": {
@@ -1590,6 +1682,9 @@
                 "$ref": "#/components/schemas/SmV2Result"
               }
             ]
+          },
+          "$type": {
+            "type": "string"
           }
         }
       },
@@ -1673,6 +1768,110 @@
           }
         }
       },
+      "SmV2ScheduledGame": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SmV2BaseGame"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "time": {
+                "type": "string",
+                "description": "Datum und Uhrzeit des Spiels im Format \"HH:MM\".\nBeispiel: \"16:00\"",
+                "nullable": true
+              },
+              "hosting_club": {
+                "type": "string",
+                "description": "Name des ausrichtenden Vereins.",
+                "nullable": true
+              },
+              "game_id": {
+                "type": "integer",
+                "description": "Id des Spiels.",
+                "format": "int32",
+                "nullable": true
+              },
+              "game_number": {
+                "type": "integer",
+                "description": "Nummer des Spiels.\nVermutlich Liga-Bezogen.\nAnmerkung: in SmV2Game dieses Feld mit der gleichen Bezeichnung ist ein integer.",
+                "format": "int32",
+                "nullable": true
+              },
+              "game_day": {
+                "type": "integer",
+                "description": "Nummer des Spieltags.\nAnmerkung: in SmV2Game ist dieses Feld ein struct..",
+                "format": "int32",
+                "nullable": true
+              },
+              "game_day_id": {
+                "type": "integer",
+                "description": "Spieltags-Id.\nAnmerkung: vermutlich ist diese Id auch von SaisonManager einmalig je Spieltag, aber noch nicht überprüft.",
+                "format": "int32",
+                "nullable": true
+              },
+              "group_identifier": {
+                "type": "string",
+                "description": "Bezeichner-ID der Gruppe, zu der das Spiel gehört.\nIst null, wenn das Spiel keiner Gruppe zugeordnet ist.",
+                "nullable": true
+              },
+              "series_title": {
+                "type": "string",
+                "description": "Bezeichnung der Serie, zu der das Spiel gehört, z.B. \"Halbfinale\", \"Finale\" etc.\nIst null, wenn das Spiel keiner Serie zugeordnet ist.",
+                "nullable": true
+              },
+              "series_number": {
+                "type": "string",
+                "description": "Nummer der Serie, zu der das Spiel gehört.\nIst null, wenn das Spiel keiner Serie zugeordnet ist.\nBeispiel: \"2  \" für das zweite Halbfinale.",
+                "nullable": true
+              },
+              "home_team_filling_rule": {
+                "type": "string",
+                "description": "Unbekannt",
+                "nullable": true
+              },
+              "home_team_filling_title": {
+                "type": "string",
+                "description": "Unbekannt",
+                "nullable": true
+              },
+              "home_team_filling_parameter": {
+                "type": "integer",
+                "description": "Unbekannt",
+                "format": "int32",
+                "nullable": true
+              },
+              "guest_team_filling_rule": {
+                "type": "string",
+                "description": "Regel, wie die Gastmannschaft für dieses Spiel bestimmt wird.\nIst null, wenn das Spiel keiner Gruppe zugeordnet ist.\nMögliche Werte: \"game_loser\",\"place_a\",\"place_b\",\"game_winner\" (see: GuestTeamFillingRule)",
+                "nullable": true
+              },
+              "guest_team_filling_title": {
+                "type": "string",
+                "description": "Bezeichnung, wie die Gastmannschaft für dieses Spiel bestimmt wird.\nIst null, wenn das Spiel keiner Gruppe zugeordnet ist.\nBeispiel: \"Verlierer Halbfinale 2\",\"Gruppe A / Platz 3\".",
+                "nullable": true
+              },
+              "guest_team_filling_parameter": {
+                "type": "integer",
+                "description": "Parameter, wie die Gastmannschaft für dieses Spiel bestimmt wird.\nIst null, wenn das Spiel keiner Gruppe zugeordnet ist.\nAnmerkung: Game-ID wenn \"game_loser\", Table-ID wenn \"place_a\".",
+                "format": "int32",
+                "nullable": true
+              },
+              "nominated_referee_string": {
+                "type": "string",
+                "description": "Nominierte Schiedsrichter als String, z.B. \"Max Mustermann, Erika Musterfrau\".\nAnmerkung: in SmV2Game ist dieses Feld mit \"nominated_referees\" bezeichnet.",
+                "nullable": true
+              },
+              "state": {
+                "type": "string",
+                "description": "Status des Spiels, z.B. \"scheduled\", \"postponed\", \"cancelled\".\nAnmerkung: in SmV2Game ist dieses Feld mit \"game_status\" bezeichnet (SmV2Game.GameState).",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
       "SmGameRequest": {
         "allOf": [
           {
@@ -1694,93 +1893,6 @@
         "items": {
           "$ref": "#/components/schemas/SmV2ScheduledGame"
         }
-      },
-      "SmV2ScheduledGame": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SmV2BaseGame"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "time": {
-                "type": "string",
-                "nullable": true
-              },
-              "hosting_club": {
-                "type": "string",
-                "nullable": true
-              },
-              "game_id": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "game_number": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "game_day": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "game_day_id": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "group_identifier": {
-                "type": "string",
-                "nullable": true
-              },
-              "series_title": {
-                "type": "string",
-                "nullable": true
-              },
-              "series_number": {
-                "type": "string",
-                "nullable": true
-              },
-              "home_team_filling_rule": {
-                "type": "string",
-                "nullable": true
-              },
-              "home_team_filling_title": {
-                "type": "string",
-                "nullable": true
-              },
-              "home_team_filling_parameter": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "guest_team_filling_rule": {
-                "type": "string",
-                "nullable": true
-              },
-              "guest_team_filling_title": {
-                "type": "string",
-                "nullable": true
-              },
-              "guest_team_filling_parameter": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "nominated_referee_string": {
-                "type": "string",
-                "nullable": true
-              },
-              "state": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
       },
       "SmLeagueScheduleRequest": {
         "allOf": [
@@ -1893,72 +2005,87 @@
         "properties": {
           "games": {
             "type": "integer",
+            "description": "Anzahl gespielter Spiele.",
             "format": "int32",
             "nullable": true
           },
           "won": {
             "type": "integer",
+            "description": "Anzahl gewonnener Spiele.",
             "format": "int32",
             "nullable": true
           },
           "draw": {
             "type": "integer",
+            "description": "Anzahl unentschiedener Spiele.",
             "format": "int32",
             "nullable": true
           },
           "lost": {
             "type": "integer",
+            "description": "Anzahl verlorener Spiele.",
             "format": "int32",
             "nullable": true
           },
           "won_ot": {
             "type": "integer",
+            "description": "Anzahl gewonnener Spiele nach Verlängerung.",
             "format": "int32",
             "nullable": true
           },
           "lost_ot": {
             "type": "integer",
+            "description": "Anzahl verlorener Spiele nach Verlängerung.",
             "format": "int32",
             "nullable": true
           },
           "goals_scored": {
             "type": "integer",
+            "description": "Anzahl erzielter Tore.",
             "format": "int32",
             "nullable": true
           },
           "goals_received": {
             "type": "integer",
+            "description": "Anzahl Gegentore.",
             "format": "int32",
             "nullable": true
           },
           "goals_diff": {
             "type": "integer",
+            "description": "Tordifferenz (Anzahl erzielter Tore - Anzahl Gegentore).",
             "format": "int32",
             "nullable": true
           },
           "points": {
             "type": "number",
+            "description": "Anzahl der Punkte eines Teams.",
             "format": "decimal",
             "nullable": true
           },
           "team_name": {
             "type": "string",
+            "description": "Name des Teams.",
             "nullable": true
           },
           "team_id": {
             "type": "integer",
+            "description": "Id des Teams.",
             "format": "int32",
             "nullable": true
           },
           "team_logo": {
             "type": "string",
+            "description": "Url zum Logo des Teams.",
             "nullable": true
           },
           "team_logo_small": {
             "type": "string",
+            "description": "Url zum kleinen Logo des Teams.\n(bisher identisch zu team_logo)",
             "nullable": true
           },
           "point_corrections": {
+            "description": "Korrekturen der Punkte eines Teams.\nZ.B. bei Entscheidungen des Sportgerichts, die zu einer Änderung der Punkte führen können.",
             "nullable": true,
             "oneOf": [
               {
@@ -1968,11 +2095,13 @@
           },
           "sort": {
             "type": "integer",
+            "description": "Die Sortierreihenfolge der Teams in der Tabelle.",
             "format": "int32",
             "nullable": true
           },
           "position": {
             "type": "integer",
+            "description": "Die Position eines Teams in der Tabelle.\nEs werden auch Entscheidungen des Sportgerichts berücksichtigt, die zu einer Änderung der Position führen können.",
             "format": "int32",
             "nullable": true
           }
@@ -2020,18 +2149,22 @@
       },
       "SmV2TableGroup": {
         "type": "object",
+        "description": "Gruppe einer Tabelle, z.B. \"Gruppe A\", \"Gruppe B\" bei einer Liga mit Gruppenphase.",
         "additionalProperties": false,
         "properties": {
           "group_identifier": {
             "type": "string",
+            "description": "Identifier der Gruppe, z.B. \"group_a\", \"group_b\". Wird in der API verwendet, um die Gruppen zu unterscheiden.",
             "nullable": true
           },
           "name": {
             "type": "string",
+            "description": "Name der Gruppe, z.B. \"Gruppe A\", \"Gruppe B\". Wird in der API angezeigt, um die Gruppen zu benennen.",
             "nullable": true
           },
           "table": {
             "type": "array",
+            "description": "Liste der Teams in der Gruppe.\nIdentisch zur Tabelle der Liga, aber nur mit den Teams der jeweiligen Gruppe.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -2063,103 +2196,125 @@
       },
       "SmV2ScorerPlayer": {
         "type": "object",
+        "description": "Beschreibung eines Spielers in einer Liga.",
         "additionalProperties": false,
         "properties": {
           "games": {
             "type": "integer",
+            "description": "Anzahl gespielter Spiele.",
             "format": "int32",
             "nullable": true
           },
           "goals": {
             "type": "integer",
+            "description": "Anzahl erzielter Tore.",
             "format": "int32",
             "nullable": true
           },
           "assists": {
             "type": "integer",
+            "description": "Anzahl erzielter Assists.",
             "format": "int32",
             "nullable": true
           },
           "penalty_2": {
             "type": "integer",
+            "description": "Anzahl von 2' Strafen.",
             "format": "int32",
             "nullable": true
           },
           "penalty_2and2": {
             "type": "integer",
+            "description": "Anzahl von 2+2' Strafen.",
             "format": "int32",
             "nullable": true
           },
           "penalty_5": {
             "type": "integer",
+            "description": "Anzahl von 5' Strafen.",
             "format": "int32",
             "nullable": true
           },
           "penalty_10": {
             "type": "integer",
+            "description": "Anzahl von 10' Strafen.",
             "format": "int32",
             "nullable": true
           },
           "penalty_ms_tech": {
             "type": "integer",
+            "description": "Anzahl von technischen Matchstrafen.",
             "format": "int32",
             "nullable": true
           },
           "penalty_ms_full": {
             "type": "integer",
+            "description": "Anzahl von vollen Matchstrafen.",
             "format": "int32",
             "nullable": true
           },
           "penalty_ms1": {
             "type": "integer",
+            "description": "Anzahl von Matchstrafen 1.",
             "format": "int32",
             "nullable": true
           },
           "penalty_ms2": {
             "type": "integer",
+            "description": "Anzahl von Matchstrafen 2.",
             "format": "int32",
             "nullable": true
           },
           "penalty_ms3": {
             "type": "integer",
+            "description": "Anzahl von Matchstrafen 3.",
             "format": "int32",
             "nullable": true
           },
           "player_id": {
             "type": "integer",
+            "description": "Id des Spielers.",
             "format": "int32",
             "nullable": true
           },
           "team_id": {
             "type": "integer",
+            "description": "Id des Teams, für das der Spieler spielt.",
             "format": "int32",
             "nullable": true
           },
           "team_name": {
             "type": "string",
+            "description": "Name des Teams, für das der Spieler spielt.",
             "nullable": true
           },
           "first_name": {
             "type": "string",
+            "description": "Vorname des Spielers.",
             "nullable": true
           },
           "last_name": {
             "type": "string",
+            "description": "Nachname des Spielers.",
             "nullable": true
           },
           "image": {
+            "description": "Bild des Spielers.\nAnmerkung: wird nicht verwendet (null). Daher Datentyp (url, binary data o.ä.) unklar.",
             "nullable": true
           },
           "image_small": {
+            "description": "Kleines Bild des Spielers.\nAnmerkung: wird nicht verwendet (null). Daher Datentyp (url, binary data o.ä.) unklar.",
             "nullable": true
           },
           "sort": {
             "type": "integer",
+            "description": "Sortierschlüssel für die Sortierung der Spieler in der Scorerliste.",
             "format": "int32",
             "nullable": true
           },
           "position": {
             "type": "integer",
+            "description": "Posiion des Spielers in der Scorerliste.",
             "format": "int32",
             "nullable": true
           }
@@ -2193,6 +2348,7 @@
         "properties": {
           "arenas": {
             "type": "array",
+            "description": "Liste von allen Turnhallen, die in der Liga verwendet werden.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -2205,6 +2361,7 @@
           },
           "teams": {
             "type": "array",
+            "description": "Liste von Teams, die in der Liga Spielen.\nEin Team ist nur für die Saison gültig, Teams werden jede Saison neu erstellt.\nEin Mapping von Teams zwischen den Saisons durch den Saisonmanager ist nicht möglich.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -2217,6 +2374,7 @@
           },
           "clubs": {
             "type": "array",
+            "description": "Liste von Vereinen, die in der Liga Spielen.\nEin Verein ist über die Saisons hinweg gültig.",
             "nullable": true,
             "items": {
               "nullable": true,
@@ -2231,70 +2389,86 @@
       },
       "SmV2Arena": {
         "type": "object",
+        "description": "Eine Turnhalle, die in der Liga verwendet wird.\nDaten sind teilweise doppelt, fehlerhaft oder unvollständig.",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "integer",
+            "description": "Die ID der Turnhalle.\nBeachte: Es existiert eine Turnhalle mit der ArenaId 0, sonst sind sämtliche SaisonManager-IDs > 0.\nDaher wird diese spezielle ArenaId ignoriert.",
             "format": "int32",
             "nullable": true
           },
           "capacity": {
             "type": "string",
+            "description": "Die Kapazität der Turnhalle. In der Regel eine Zahl.",
             "nullable": true
           },
           "city": {
             "type": "string",
+            "description": "Die Stadt, in der sich die Turnhalle befindet.",
             "nullable": true
           },
           "comment": {
             "type": "string",
+            "description": "Ein Kommentar zur Turnhalle, z.B. \"Die Halle ist nicht beheizt.\" oder \"Die Halle ist neu renoviert.\".\nBisher nicht verwendet.",
             "nullable": true
           },
           "created_at": {
             "type": "string",
+            "description": "Erstellungsdatum des Eintrags zur Turnhalle im UTC-Format.\nBeispiel: 2015-08-30T13:04:33.000Z",
             "format": "date-time",
             "nullable": true
           },
           "created_by": {
             "type": "integer",
+            "description": "ID des Benutzers, der den Eintrag zur Turnhalle erstellt hat.",
             "format": "int32",
             "nullable": true
           },
           "disabled": {
             "type": "boolean",
+            "description": "Wird dieser Eintrag zur Turnhalle verwendet?",
             "nullable": true
           },
           "housenumber": {
             "type": "string",
+            "description": "Hausnummer der Turnhalle.",
             "nullable": true
           },
           "name": {
             "type": "string",
+            "description": "Name der Turnhalle.",
             "nullable": true
           },
           "postcode": {
             "type": "string",
+            "description": "Postleitzahl der Turnhalle.",
             "nullable": true
           },
           "public_transport_note": {
             "type": "string",
+            "description": "Ein Hinweis zur Anreise mit öffentlichen Verkehrsmitteln.",
             "nullable": true
           },
           "street": {
             "type": "string",
+            "description": "Straßenname der Turnhalle.",
             "nullable": true
           },
           "travel_note": {
             "type": "string",
+            "description": "Ein Hinweis zur Anreise.",
             "nullable": true
           },
           "updated_at": {
             "type": "string",
+            "description": "Das Datum der letzten Aktualisierung des Eintrags zur Turnhalle im UTC-Format.\nBeispiel: 2015-08-30T13:04:33.000Z",
             "format": "date-time",
             "nullable": true
           },
           "updated_by": {
             "type": "integer",
+            "description": "ID des Benutzers, der den Eintrag zur Turnhalle zuletzt aktualisiert hat.",
             "format": "int32",
             "nullable": true
           }
@@ -2302,31 +2476,38 @@
       },
       "SmV2Team": {
         "type": "object",
+        "description": "Ein Team, das in der Liga spielt.\nDas Team ist nur für die Saison gültig, Teams werden jede Saison neu erstellt.\nEin Mapping von Teams zwischen den Saisons durch den Saisonmanager ist nicht möglich.",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "integer",
+            "description": "Die ID des Teams. (> 0)",
             "format": "int32",
             "nullable": true
           },
           "name": {
             "type": "string",
+            "description": "Vollständiger Name des Teams, z.B. \"STV Sedelsberg Hawks\".",
             "nullable": true
           },
           "short_name": {
             "type": "string",
+            "description": "Kurzname des Teams, z.B. \"Hawks\".",
             "nullable": true
           },
           "logo": {
+            "description": "Wird nicht verwendet (null).",
             "nullable": true
           },
           "league_id": {
             "type": "integer",
+            "description": "Liga-ID in der das Team spielt.",
             "format": "int32",
             "nullable": true
           },
           "cup_leagues": {
             "type": "array",
+            "description": "Weitere Liga-IDs, in denen das Team spielt., z.B. in einem Pokalwettbewerb.",
             "nullable": true,
             "items": {
               "type": "integer",
@@ -2336,40 +2517,49 @@
           },
           "club_id": {
             "type": "integer",
+            "description": "ID des Vereins, dem das Team zugeordnet ist.",
             "format": "int32",
             "nullable": true
           },
           "league_name": {
             "type": "string",
+            "description": "Name der Liga, in der das Team spielt.",
             "nullable": true
           },
           "league_short_name": {
             "type": "string",
+            "description": "Kurzname der Liga, in der das Team spielt.",
             "nullable": true
           },
           "game_operation_id": {
             "type": "integer",
+            "description": "ID des Verbandes, in dem das Team spielt.",
             "format": "int32",
             "nullable": true
           },
           "game_operation_name": {
             "type": "string",
+            "description": "Name des Verbandes, in dem das Team spielt.\nBeispiel: \"Floorball Niedersachsen\"",
             "nullable": true
           },
           "game_operation_short_name": {
             "type": "string",
+            "description": "Kurzname des Verbandes, in dem das Team spielt.\nBeispiel: \"FVNB\"",
             "nullable": true
           },
           "game_operation_slug": {
             "type": "string",
+            "description": "Slug des Verbandes, in dem das Team spielt. Wird in URLs verwendet.\nBeispiel: \"fvnb\"",
             "nullable": true
           },
           "syndicate": {
             "type": "boolean",
+            "description": "Ist das Team ein Zusammenschluss aus mehreren Vereinen?",
             "nullable": true
           },
           "syndicate_clubs": {
             "type": "array",
+            "description": "Liste von Vereins-IDs, die an einem Zusammenschluss beteiligt sind.",
             "nullable": true,
             "items": {
               "type": "integer",
@@ -2379,54 +2569,66 @@
           },
           "logo_url": {
             "type": "string",
+            "description": "Url zum Logo des Teams.",
             "nullable": true
           },
           "logo_small": {
             "type": "string",
+            "description": "Url zum kleinen Logo des Teams.\nAnmerkung: Bisher identisch zum Logo-URL, aber könnte in Zukunft abweichen.",
             "nullable": true
           }
         }
       },
       "SmV2Club": {
         "type": "object",
+        "description": "Ein Verein.",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "integer",
+            "description": "Die ID des Vereins. (> 0)",
             "format": "int32",
             "nullable": true
           },
           "long_name": {
             "type": "string",
+            "description": "Vollständiger Name des Vereins, z.B. \"Floorball-Club München e. V.\".",
             "nullable": true
           },
           "name": {
             "type": "string",
+            "description": "Name des Vereins, z.B. \"Floorball-Club München\".",
             "nullable": true
           },
           "short_name": {
             "type": "string",
+            "description": "Kurzname des Vereins, z.B. \"FBCM\".",
             "nullable": true
           },
           "state": {
             "type": "string",
+            "description": "Bundesland des Vereins im ISO 3166-2 Format.\nSiehe: https://de.wikipedia.org/wiki/ISO_3166-2:DE\nBeispiel: \"de-by\"",
             "nullable": true
           },
           "logo_url": {
             "type": "string",
+            "description": "Url zum Logo des Vereins.",
             "nullable": true
           },
           "logo_small_url": {
             "type": "string",
+            "description": "Url zum kleinen Logo des Vereins.\nAnmerkung: Bisher identisch zum Logo-URL, aber könnte in Zukunft abweichen.",
             "nullable": true
           },
           "game_operation_id": {
             "type": "integer",
+            "description": "Id des Verbandes, in dem der Verein spielt.",
             "format": "int32",
             "nullable": true
           },
           "additional_game_operation_ids": {
             "type": "array",
+            "description": "Id anderer Spielbetriebe, in denen der Verein spielt., z.B. in einem Pokalwettbewerb.",
             "nullable": true,
             "items": {
               "type": "integer",
@@ -2468,6 +2670,12 @@
         "type": "object",
         "x-abstract": true,
         "additionalProperties": false
+      },
+      "SmLeagueCurrentGameDayScheduleResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SmV2ScheduledGame"
+        }
       },
       "SmLeagueCurrentGameDayScheduleRequest": {
         "allOf": [
